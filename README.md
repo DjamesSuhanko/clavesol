@@ -46,6 +46,8 @@ O site pode ser revisado primeiro no endereço do GitHub Pages. Para ativar o do
 
 ## Créditos de fotografias
 
+- Clarinete (destaque): https://unsplash.com/s/photos/clarinet — imagem Unsplash photo-1573871665247-2b556aa23460.
+
 - Violino: https://unsplash.com/s/photos/violin — imagem Unsplash photo-1492563817904-5f1dc687974f.
 - Partitura no piano: Jez Timms, https://unsplash.com/photos/sheet-music-sitting-on-top-of-a-piano-o0eWmlCT1Zk.
 - Fotos sob a licença Unsplash: https://unsplash.com/license.
