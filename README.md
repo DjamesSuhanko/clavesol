@@ -53,3 +53,11 @@ O site pode ser revisado primeiro no endereço do GitHub Pages. Para ativar o do
 - Fotos sob a licença Unsplash: https://unsplash.com/license.
 
 As fontes Google Fonts são opcionais; fontes locais substitutas mantêm o site legível. O site não inclui analytics nem cookies próprios.
+
+## Atualizações e cache
+
+O gerador adiciona `?v=<hash>` às URLs dos arquivos locais: CSS, JavaScript, imagens, áudio, MusicXML e mapa do cursor. O hash muda quando o arquivo muda; o módulo importado pelo player também é versionado. Os arquivos originais continuam com nomes simples em `assets/`.
+
+Cada publicação gera `version.json`. Ao abrir a página ou voltar a uma aba (no máximo uma consulta por minuto), um pequeno script verifica se existe uma versão diferente e oferece **Atualizar** ou **Depois**. Não há recarga automática durante a leitura ou reprodução. A atualização usa um parâmetro na URL para buscar o HTML novamente. Falhas de rede não impedem a leitura.
+
+O HTML ainda respeita o cache HTTP da hospedagem, atualmente de 10 minutos no GitHub Pages. O aviso só funciona em páginas que já receberam esta implementação; páginas antigas podem precisar de uma atualização manual inicial. Ao mudar o domínio no Pages, execute novamente a ação de publicação para regenerar o caminho base.

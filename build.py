@@ -2,6 +2,7 @@ from pathlib import Path
 import os,shutil,html,json
 import markdown
 from music_pages import build_music
+from cache_assets import finish_build
 ROOT=Path(__file__).parent; OUT=ROOT/'dist'; BASE=os.environ.get('BASE_PATH','').rstrip('/')
 if OUT.exists(): shutil.rmtree(OUT)
 OUT.mkdir();shutil.copytree(ROOT/'assets',OUT/'assets')
@@ -9,7 +10,7 @@ E=html.escape
 cats={'gem':('GEM','Grupo de Ensino Musical','Fundamentos, leitura e prática para aprender em conjunto.'),'artigos':('Artigos','Tudo sobre música','Ideias e ferramentas para a música na orquestra e em casa.'),'luthier':('Luthier','Serviços de luthier','O cuidado com o instrumento também faz parte da música.'),'links':('Links','Aplicativos musicais','Ferramentas para escrever, ouvir e compreender o som.'),'tutoriais':('Tutoriais','Dicas e técnicas','Um passo de cada vez. Mais confiança a cada ensaio.')}
 def page(title,body):
  nav=''.join(f'<a href="{BASE}/{k}/">{v[0]}</a>' for k,v in cats.items())
- return f'''<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Clave Sol: partituras, ensino musical, artigos, luthier e aplicativos para a orquestra e para casa."><meta name="theme-color" content="#123b35"><title>{E(title)} · Clave Sol</title><link rel="icon" href="{BASE}/assets/icon.svg"><link rel="stylesheet" href="{BASE}/assets/style.css"></head><body><a class="skip" href="#conteudo">Pular para o conteúdo</a><div class="topline">MÚSICA PARA APRENDER, PRATICAR E COMPARTILHAR</div><header><a class="brand" href="{BASE}/"><span class="clef" aria-hidden="true">𝄞</span><span>Clave Sol<small>UM ENCONTRO COM A MÚSICA</small></span></a><nav aria-label="Principal">{nav}<a class="nav-score" href="{BASE}/partituras/">Partituras</a></nav></header><main id="conteudo">{body}</main><footer><a class="brand" href="{BASE}/"><span class="clef" aria-hidden="true">𝄞</span><span>Clave Sol<small>APRENDER. TOCAR. COMPARTILHAR.</small></span></a><p>Da primeira nota ao próximo ensaio.<br>Um espaço musical de Djames Suhanko.</p><a href="https://github.com/DjamesSuhanko/clavesol">Feito para compartilhar · GitHub</a></footer></body></html>'''
+ return f'''<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Clave Sol: partituras, ensino musical, artigos, luthier e aplicativos para a orquestra e para casa."><meta name="theme-color" content="#123b35"><title>{E(title)} · Clave Sol</title><link rel="icon" href="{BASE}/assets/icon.svg"><link rel="stylesheet" href="{BASE}/assets/style.css"></head><body><a class="skip" href="#conteudo">Pular para o conteúdo</a><div class="topline">MÚSICA PARA APRENDER, PRATICAR E COMPARTILHAR</div><header><a class="brand" href="{BASE}/"><span class="clef" aria-hidden="true">𝄞</span><span>Clave Sol<small>UM ENCONTRO COM A MÚSICA</small></span></a><nav aria-label="Principal">{nav}<a class="nav-score" href="{BASE}/partituras/">Partituras</a></nav></header><main id="conteudo">{body}</main><footer><a class="brand" href="{BASE}/"><span class="clef" aria-hidden="true">𝄞</span><span>Clave Sol<small>APRENDER. TOCAR. COMPARTILHAR.</small></span></a><p>Da primeira nota ao próximo ensaio.<br>Um espaço musical de Djames Suhanko.</p><a href="https://github.com/DjamesSuhanko/clavesol">Feito para compartilhar · GitHub</a></footer><script defer src="{BASE}/assets/updates.js" data-version="__CLAVESOL_VERSION__" data-manifest="{BASE}/version.json"></script></body></html>'''
 def save(route,title,body):
  target=OUT/route; target.mkdir(parents=True,exist_ok=True);(target/'index.html').write_text(page(title,body))
 articles=[]
@@ -42,3 +43,5 @@ for route in ['musica','musica/msa']:
 p=OUT/'musica/msa/107-msa-bb/index.html';s=p.read_text().replace('PARTITURA EXPERIMENTAL','PARTITURA · ESTUDO COM ÁUDIO').replace(' ↓','').replace(' ↗','');p.write_text(s)
 (OUT/'404.html').write_text(page('Página não encontrada',f'<section class="category-page"><p class="eyebrow">PAUSA NA LEITURA · 404</p><h1>Esta página não está na estante.</h1><a class="button" href="{BASE}/">Voltar ao início</a></section>'))
 (OUT/'.nojekyll').touch();print(f'{len(list(OUT.rglob("*.html")))} páginas geradas em {OUT}')
+
+finish_build(OUT, BASE)
