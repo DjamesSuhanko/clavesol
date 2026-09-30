@@ -1,9 +1,11 @@
 from pathlib import Path
 import os,shutil,html,json
 import markdown
-from music_pages import build_music
+from music_pages import build_music, featured_score
+from score_catalog import load_catalog
 from cache_assets import finish_build
 ROOT=Path(__file__).parent; OUT=ROOT/'dist'; BASE=os.environ.get('BASE_PATH','').rstrip('/')
+catalog = load_catalog(ROOT)
 if OUT.exists(): shutil.rmtree(OUT)
 OUT.mkdir();shutil.copytree(ROOT/'assets',OUT/'assets')
 E=html.escape
@@ -21,7 +23,7 @@ def card(a):
  picture=f'<img src="{BASE}/assets/{E(a["image"])}" alt="" loading="lazy">' if a['image'] else '<div class="type-art" aria-hidden="true">𝄞</div>'
  return f'<article class="card"><a class="card-picture" aria-label="{E(a['title'])}" href="{BASE}/artigos/{a["slug"]}/">{picture}</a><div class="card-body"><span class="eyebrow">{cats[a["category"]][0]}</span><h3><a href="{BASE}/artigos/{a["slug"]}/">{E(a["title"])}</a></h3><p>{E(a["description"])}</p><a class="read" href="{BASE}/artigos/{a["slug"]}/">Ler conteúdo <span aria-hidden="true">＋</span></a></div></article>'
 def scorecard():
- return f'<article class="score-card"><div class="score-thumb"><img src="{BASE}/assets/music/107-msa-bb/score-1.svg" alt="Trecho da partitura 107 — MSA — Bb" loading="lazy"></div><div><p class="eyebrow">MSA · CLARINETE EM SI♭</p><h3>107 — MSA — Bb</h3><p>P. Bona · 13 compassos · Partitura com áudio</p><a class="button" href="{BASE}/musica/msa/107-msa-bb/">Abrir e estudar</a><a class="download" href="{BASE}/assets/music/107-msa-bb/score.musicxml" download>Baixar MusicXML</a></div></article>'
+ return featured_score(catalog, BASE)
 categorylinks=''.join(f'<a class="topic" href="{BASE}/{k}/"><span class="topic-number">0{i+1}</span><strong>{v[0]}</strong><span>{v[1]}</span></a>' for i,(k,v) in enumerate(cats.items()))
 body=f'''<section class="hero"><div class="hero-copy"><p class="eyebrow">SEU ESPAÇO DE CULTURA MUSICAL</p><h1>A música nos une.<br><em>O conhecimento<br>nos transforma.</em></h1><p class="lead">Partituras, descobertas e boas ideias para levar do estudo em casa à próxima apresentação.</p><div class="actions"><a class="button" href="{BASE}/partituras/">Explorar partituras</a><a class="text-link" href="{BASE}/gem/">Conhecer o GEM</a></div><p class="hero-note">PARA QUEM APRENDE. PARA QUEM ENSINA. PARA QUEM TOCA.</p></div><div class="hero-photo"><img src="{BASE}/assets/clarinet.jpg" alt="Detalhe das chaves e do corpo de um clarinete"><div class="photo-caption"><span>DA PRIMEIRA NOTA<br>À MÚSICA QUE FICA.</span><span aria-hidden="true">𝄞</span></div></div></section><div class="topics">{categorylinks}</div><section class="section"><div class="section-heading"><div><p class="eyebrow">LEITURAS PARA O SEU REPERTÓRIO</p><h2>Entre notas e ideias<span>.</span></h2></div><a class="text-link" href="{BASE}/artigos/">Todos os artigos</a></div><div class="cards">{''.join(card(a) for a in articles[:3])}</div></section><section class="score-feature"><div><p class="eyebrow">ESTANTE DE PARTITURAS</p><h2>Sua próxima prática<br>começa aqui.</h2><p>Abra a partitura, ouça cada passagem e encontre o seu tempo. Música para estudar com atenção.</p><a class="text-link" href="{BASE}/partituras/">Conhecer o acervo</a></div>{scorecard()}</section><section class="gem-banner"><div><p class="eyebrow">GEM · GRUPO DE ENSINO MUSICAL</p><h2>Crescer na música.<br>Aprender em conjunto.</h2></div><div><p>Leitura, ritmo e escuta: uma base para cada novo músico. Materiais de apoio para acompanhar o aprendizado dentro e fora da aula.</p><a class="button" href="{BASE}/gem/">Acessar o material de estudo</a></div></section>'''
 save('', 'Partituras, aprendizado e inspiração',body)
@@ -35,12 +37,7 @@ for key,(name,subtitle,desc) in cats.items():
  if key=='luthier':extra=f'<div class="luthier-panel"><img src="{BASE}/assets/violin.jpg" alt="Detalhe de um instrumento de cordas"><div><p class="eyebrow">CUIDADO QUE SE OUVE</p><h2>Serviços de luthier</h2><p>Este espaço reunirá informações sobre avaliação, regulagem e manutenção de instrumentos.</p><p>Os serviços disponíveis, a região de atendimento e os contatos serão publicados aqui em breve.</p></div></div>'
  if key=='tutoriais':extra+='<div class="video-panel"><span class="video-symbol" aria-hidden="true">▷</span><div><p class="eyebrow">PARA VER E PRATICAR</p><h2>MuseScore em vídeo</h2><p>Tutoriais oficiais para começar a escrever partituras e explorar o programa. Conteúdo em inglês.</p><a class="button" href="https://musescore.org/en/tutorials">Assistir aos tutoriais oficiais</a></div></div>'
  save(key,name,f'<section class="category-page"><p class="eyebrow">CLAVE SOL / {name.upper()}</p><h1>{subtitle}<span>.</span></h1><p class="lead">{desc}</p><div class="cards">{"".join(card(a) for a in matches)}</div>{extra}</section>')
-save('partituras','Partituras',f'<section class="category-page"><p class="eyebrow">A SUA ESTANTE MUSICAL</p><h1>Partituras para<br><em>ler, ouvir e tocar.</em></h1><p class="lead">Um acervo em construção. Comece pelo estudo de clarinete da coleção MSA, com áudio e acompanhamento visual.</p>{scorecard()}</section>')
-build_music(OUT,BASE,page)
-# Preserve migrated score URLs and reader, but replace the old experimental catalog.
-for route in ['musica','musica/msa']:
- save(route,'Coleção MSA',f'<section class="category-page"><p class="eyebrow">ESTANTE DE PARTITURAS</p><h1>Coleção MSA</h1>{scorecard()}</section>')
-p=OUT/'musica/msa/107-msa-bb/index.html';s=p.read_text().replace('PARTITURA EXPERIMENTAL','PARTITURA · ESTUDO COM ÁUDIO').replace(' ↓','').replace(' ↗','');p.write_text(s)
+build_music(OUT,BASE,page,catalog)
 (OUT/'404.html').write_text(page('Página não encontrada',f'<section class="category-page"><p class="eyebrow">PAUSA NA LEITURA · 404</p><h1>Esta página não está na estante.</h1><a class="button" href="{BASE}/">Voltar ao início</a></section>'))
 (OUT/'.nojekyll').touch();print(f'{len(list(OUT.rglob("*.html")))} páginas geradas em {OUT}')
 
