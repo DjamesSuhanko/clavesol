@@ -1,0 +1,26 @@
+{
+  "source": "manualdomaker-site/assets/music",
+  "destination": "assets/music",
+  "files": [
+    {
+      "file": "107-msa-bb/score.ogg",
+      "sha256": "8b55e1d839a6ad69aa62e120ad476011bc9c71c7bcfa64a01e184fabcadf0a5d"
+    },
+    {
+      "file": "107-msa-bb/score.mp3",
+      "sha256": "d76a68f91ecf632c32afd8c457bdfa3bfde37f5c4419c3f2c0db1e9ddf55a978"
+    },
+    {
+      "file": "107-msa-bb/timing.json",
+      "sha256": "3204a0a32ee0345590c853ee162849ecf590b298dfbb49bb20b7d8edad4f95bf"
+    },
+    {
+      "file": "107-msa-bb/score-1.svg",
+      "sha256": "69bc327e95370db3a0323ec18226852d958621b6ce766c1a776a6916b6f3d196"
+    },
+    {
+      "file": "107-msa-bb/score.musicxml",
+      "sha256": "c355a816117a28c51109c093d25f0a3971a1ab9911aead5de8208977dd21434e"
+    }
+  ]
+}
