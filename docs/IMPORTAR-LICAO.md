@@ -14,11 +14,19 @@ python3 criar_licao.py "/caminho/completo/108-msa-bb.mscz" \
   --msa --licao 108 --commit
 ```
 
-`--metodo NOME` e `--msa` são alternativas: não podem ser usados juntos.
+Para **hinos**, use `--hinos`:
+
+```sh
+python3 criar_licao.py "/caminho/completo/hino-1.mscz" \
+  --hinos --licao 1 --pdf --commit
+```
+
+`--metodo NOME`, `--msa` e `--hinos` são alternativas: use apenas uma.
+`--licao 1` também serve para ordenar os hinos pelo número.
 Troque o caminho pelo arquivo **daquela lição**, já salvo no MuseScore. O
-script não altera o original. Se omitir ambas as opções, ele mantém a seleção
-interativa por **número** entre os métodos existentes. Para MSA, informe
-explicitamente `--msa`; nesse modo não há pergunta sobre método. Sem `--commit`, prepara
+script não altera o original. Se omitir as três opções, ele mantém a seleção
+interativa por **número** entre os métodos existentes. Para MSA ou Hinos, informe
+explicitamente `--msa` ou `--hinos`; esses modos não perguntam o método. Sem `--commit`, prepara
 os arquivos e mostra os comandos para revisar, adicionar, commitar e publicar.
 Com `--commit`, depois de uma importação bem-sucedida basta:
 
@@ -40,7 +48,8 @@ alterações de outros arquivos já colocadas no staging são preservadas.
   `Draft: false`; autor e instrumento vêm do MusicXML quando disponíveis.
 - Cria os índices da categoria e do método caso ainda não existam. No modo
   `--msa`, cria somente `partituras/msa/_index.md` se necessário, preservando
-  um índice MSA que já exista.
+  um índice MSA que já exista. Com `--hinos`, faz o equivalente em
+  `partituras/hinos/_index.md`, com o título Hinos.
 - Valida a lição e o catálogo completo antes de instalar os arquivos.
 
 Não cria MP3/Ogg. `sequence.json` será gerado automaticamente na publicação.
@@ -77,8 +86,25 @@ assets/music/msa/108-msa-bb/
 ```
 
 A página será `/partituras/msa/108-msa-bb/`. `--pdf`, `--titulo`, `--slug`,
-`--licao`, `--atualizar` e `--commit` funcionam nos dois modos.
-`--nome-metodo` é exclusivo para métodos e não é aceito com `--msa`.
+`--licao`, `--atualizar` e `--commit` funcionam nos três modos.
+`--nome-metodo` é exclusivo para métodos e não é aceito com `--msa` nem `--hinos`.
+
+Para `hino-1.mscz`, com `--hinos`:
+
+```text
+partituras/hinos/hino-1.md
+assets/music/hinos/hino-1/
+    score.musicxml
+    score-1.svg
+    timing.json
+    score.mscz
+    score.pdf        (com --pdf)
+```
+
+A página será `/partituras/hinos/hino-1/`. A categoria Hinos aparece na
+estante de partituras quando o conteúdo for publicado. Cada hino é
+independente; o modo Hinos usa o mesmo player e tem as mesmas limitações
+musicais dos outros modos, inclusive para repetições.
 
 ## Atualizar uma lição ou completar um Markdown existente
 
@@ -97,11 +123,18 @@ python3 criar_licao.py "/caminho/completo/107-msa-bb.mscz" \
   --msa --slug 107-msa-bb --licao 107 --atualizar --pdf --commit
 ```
 
+Para atualizar um hino, preservando seu texto:
+
+```sh
+python3 criar_licao.py "/caminho/completo/hino-1.mscz" \
+  --hinos --licao 1 --atualizar --pdf --commit
+```
+
 Cadastros antigos que já tenham `Assets` personalizado mantêm essa pasta.
 Por exemplo, a lição 107 pode continuar em `assets/music/107-msa-bb/`;
 o importador não a move para `assets/music/msa/107-msa-bb/`. Também preserva
 `Legacy`, para manter os endereços antigos. O commit usa o caminho real dos
-assets, sem incluir os índices de métodos no caso de uma lição MSA.
+assets, sem incluir os índices de métodos no caso de uma lição MSA ou de um hino.
 
 O texto e os metadados editoriais existentes são preservados. O script ativa
 som gerado, cursor e publicação (`Draft: false`), e atualiza contagens de páginas

@@ -59,6 +59,26 @@ class ImportTests(unittest.TestCase):
         catalog = load_catalog(self.root)
         self.assertEqual({s.key for s in catalog.scores}, {'msa/licao-20','metodos/pecci/licao-20'})
 
+    def test_hinos_import_update_and_category_independence(self):
+        key = prepare(self.source, hinos=True, root=self.root, slug='hino-1', lesson=1, pdf=True, executable='musescore')
+        self.assertEqual(key, 'hinos/hino-1')
+        assets = self.root/'assets/music/hinos/hino-1'
+        self.assertTrue(all((assets/name).is_file() for name in ['score.musicxml','score-1.svg','timing.json','score.mscz','score.pdf']))
+        index = self.root/'partituras/hinos/_index.md'
+        self.assertEqual(index.read_text(), 'Title: Hinos\n')
+        md = self.root/'partituras/hinos/hino-1.md'
+        md.write_text(md.read_text() + 'Orientações do hino.\n')
+        index.write_text(index.read_text() + 'Description: Meus hinos.\n')
+        prepare(self.source, hinos=True, root=self.root, slug='hino-1', update=True, executable='musescore')
+        self.assertIn('Orientações do hino.', md.read_text())
+        self.assertIn('Meus hinos.', index.read_text())
+        self.assertEqual(lesson_paths(self.root, key), ['partituras/hinos/hino-1.md','assets/music/hinos/hino-1','partituras/hinos/_index.md'])
+        prepare(self.source, msa=True, root=self.root, slug='hino-1', executable='musescore')
+        self.run_import(slug='hino-1')
+        self.assertEqual({s.key for s in load_catalog(self.root).scores}, {'hinos/hino-1','msa/hino-1','metodos/pecci/hino-1'})
+        with self.assertRaises(ValueError):
+            prepare(self.source, msa=True, hinos=True, root=self.root)
+
     def test_update_existing_msa_preserves_legacy_assets_and_text(self):
         md = self.root/'partituras/msa/107-msa-bb.md'
         md.parent.mkdir(parents=True)
@@ -120,6 +140,21 @@ class CliTests(unittest.TestCase):
             self.assertTrue(importer.call_args.kwargs['msa'])
             self.assertIn('git add partituras/msa/licao.md', output.getvalue())
             self.assertNotIn('metodos/', output.getvalue())
+
+    def test_hinos_skips_method_prompt(self):
+        from io import StringIO
+        with patch('sys.argv', ['criar_licao.py', '/tmp/hino.mscz', '--hinos']), patch('builtins.input') as prompt, patch('criar_licao.prepare', return_value='hinos/hino') as importer, patch('criar_licao.lesson_paths', return_value=['partituras/hinos/hino.md','assets/music/hinos/hino','partituras/hinos/_index.md']), patch('sys.stdout', new_callable=StringIO) as output:
+            main()
+            prompt.assert_not_called()
+            self.assertTrue(importer.call_args.kwargs['hinos'])
+            self.assertIn('git add partituras/hinos/hino.md', output.getvalue())
+
+    def test_hinos_rejects_other_destinations_and_method_title(self):
+        for other in [['--msa'], ['--metodo', 'pecci'], ['--nome-metodo', 'Pecci']]:
+            with self.subTest(other=other), patch('sys.argv', ['criar_licao.py', '/tmp/hino.mscz', '--hinos', *other]), patch('sys.stderr'), patch('criar_licao.prepare') as importer:
+                with self.assertRaises(SystemExit) as error: main()
+                self.assertEqual(error.exception.code, 2)
+                importer.assert_not_called()
 
     def test_cli_rejects_mixed_destinations_before_export(self):
         with patch('sys.argv', ['criar_licao.py', '/tmp/licao.mscz', '--msa', '--metodo', 'pecci']), patch('sys.stderr'), patch('criar_licao.prepare') as importer:

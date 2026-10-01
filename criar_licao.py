@@ -26,7 +26,7 @@ def one_line(value):
     return ' '.join(str(value).split())
 
 
-def prepare(source, method=None, *, msa=False, root=ROOT, slug=None, title=None, lesson=None,
+def prepare(source, method=None, *, msa=False, hinos=False, root=ROOT, slug=None, title=None, lesson=None,
             method_title=None, executable=None, update=False, pdf=False, tempo=None):
     from score_catalog import load_catalog, safe_key, validate_timing, read_markdown
     from musicxml_audio import parse_musicxml
@@ -36,16 +36,17 @@ def prepare(source, method=None, *, msa=False, root=ROOT, slug=None, title=None,
     root = Path(root).resolve()
     if not source.is_file() or source.suffix.lower() != '.mscz':
         raise ValueError('Informe o caminho de um arquivo .mscz existente, contendo somente esta lição.')
-    if msa and method:
-        raise ValueError('Escolha --msa ou --metodo, não ambos.')
-    if msa and method_title:
+    if sum((bool(method), msa, hinos)) > 1:
+        raise ValueError('Escolha --metodo, --msa ou --hinos; não ambos nem múltiplos destinos.')
+    category = 'hinos' if hinos else 'msa' if msa else None
+    if category and method_title:
         raise ValueError('--nome-metodo só pode ser usado com métodos.')
-    if not msa:
+    if not category:
         method = safe_key(method)
     slug = safe_key(slug or slugify(source.stem))
     if (method and '/' in method) or '/' in slug:
         raise ValueError('Método e lição devem ser nomes simples, sem barras.')
-    key = f'msa/{slug}' if msa else f'metodos/{method}/{slug}'
+    key = f'{category}/{slug}' if category else f'metodos/{method}/{slug}'
     md = root / 'partituras' / f'{key}.md'
     if md.exists() and not md.is_file():
         raise ValueError(f'O cadastro deve ser um arquivo Markdown, não uma pasta: {md}')
@@ -175,7 +176,7 @@ def prepare(source, method=None, *, msa=False, root=ROOT, slug=None, title=None,
             if old_md is not None: md.write_bytes(old_md)
             elif md.exists(): md.unlink()
             raise
-        indices = [(md.parent/'_index.md', 'MSA')] if msa else [
+        indices = [(md.parent/'_index.md', 'Hinos' if hinos else 'MSA')] if category else [
             (root/'partituras/metodos/_index.md', 'Métodos'),
             (md.parent/'_index.md', method_title or method.replace('-', ' ').title())]
         for path, heading in indices:
@@ -216,6 +217,7 @@ def main():
     destination = parser.add_mutually_exclusive_group()
     destination.add_argument('--metodo', help='Pasta do método, por exemplo domingos-pecci')
     destination.add_argument('--msa', action='store_true', help='Importa diretamente na categoria MSA')
+    destination.add_argument('--hinos', action='store_true', help='Importa diretamente na categoria Hinos')
     parser.add_argument('--slug', help='Nome da lição no site; padrão: nome do .mscz normalizado')
     parser.add_argument('--titulo', help='Título da lição')
     parser.add_argument('--nome-metodo', help='Título de uma coleção nova')
@@ -227,11 +229,11 @@ def main():
     parser.add_argument('--tempo', type=float, help='Semínimas/minuto, somente se o MusicXML não informar andamento')
     args = parser.parse_args()
     method = args.metodo
-    if args.msa and args.nome_metodo:
+    if (args.msa or args.hinos) and args.nome_metodo:
         parser.error('--nome-metodo só pode ser usado com métodos.')
-    if not method and not args.msa:
+    if not method and not args.msa and not args.hinos:
         if not sys.stdin.isatty():
-            parser.error('Informe --metodo ou --msa para execução sem perguntas.')
+            parser.error('Informe --metodo, --msa ou --hinos para execução sem perguntas.')
 
         available = sorted(
             p.name for p in (ROOT / 'partituras/metodos').glob('*')
@@ -257,7 +259,7 @@ def main():
         method = available[index - 1]
     if args.licao is not None and args.licao <= 0: parser.error('--licao deve ser positivo')
     try:
-        key = prepare(args.arquivo, method, msa=args.msa, slug=args.slug, title=args.titulo,
+        key = prepare(args.arquivo, method, msa=args.msa, hinos=args.hinos, slug=args.slug, title=args.titulo,
                       method_title=args.nome_metodo, lesson=args.licao, executable=args.musescore,
                       update=args.atualizar, pdf=args.pdf, tempo=args.tempo)
     except ImportError:
