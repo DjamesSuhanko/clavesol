@@ -1,0 +1,8 @@
+{
+  "site_url": "https://clavesol.com.br",
+  "site_name": "Clave Sol",
+  "description": "Partituras, ensino musical, artigos, luthier e aplicativos para aprender, praticar e compartilhar música.",
+  "default_image": "clarinet.jpg",
+  "default_image_alt": "Detalhe das chaves e do corpo de um clarinete",
+  "social_profiles": ["https://www.youtube.com/@ClaveSolMusic"]
+}

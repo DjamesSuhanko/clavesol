@@ -4,6 +4,7 @@ import markdown
 from music_pages import build_music, featured_score
 from score_catalog import load_catalog
 from cache_assets import finish_build
+from seo import finish_seo
 ROOT=Path(__file__).parent; OUT=ROOT/'dist'; BASE=os.environ.get('BASE_PATH','').rstrip('/')
 catalog = load_catalog(ROOT)
 if OUT.exists(): shutil.rmtree(OUT)
@@ -26,7 +27,7 @@ def save(route,title,body):
 articles=[]
 for source in sorted((ROOT/'content').glob('*.md')):
  md=markdown.Markdown(extensions=['meta','fenced_code','tables','toc']);content=md.convert(source.read_text());m=md.Meta
- a={k:m.get(k,[''])[0] for k in ['title','description','category','image','date']};a.update(slug=source.stem,content=content,toc=md.toc);articles.append(a)
+ a={k:m.get(k,[''])[0] for k in ['title','description','category','image','date','socialimage','socialimagealt']};a.update(slug=source.stem,content=content,toc=md.toc);articles.append(a)
 def card(a):
  picture=f'<img src="{BASE}/assets/{E(a["image"])}" alt="" loading="lazy">' if a['image'] else '<div class="type-art" aria-hidden="true">𝄞</div>'
  return f'<article class="card"><a class="card-picture" aria-label="{E(a['title'])}" href="{BASE}/artigos/{a["slug"]}/">{picture}</a><div class="card-body"><span class="eyebrow">{cats[a["category"]][0]}</span><h3><a href="{BASE}/artigos/{a["slug"]}/">{E(a["title"])}</a></h3><p>{E(a["description"])}</p><a class="read" href="{BASE}/artigos/{a["slug"]}/">Ler conteúdo <span aria-hidden="true">＋</span></a></div></article>'
@@ -49,4 +50,11 @@ build_music(OUT,BASE,page,catalog)
 (OUT/'404.html').write_text(page('Página não encontrada',f'<section class="category-page"><p class="eyebrow">PAUSA NA LEITURA · 404</p><h1>Esta página não está na estante.</h1><a class="button" href="{BASE}/">Voltar ao início</a></section>'))
 (OUT/'.nojekyll').touch();print(f'{len(list(OUT.rglob("*.html")))} páginas geradas em {OUT}')
 
+seo_metadata = {'artigos/' + a['slug']: {**a, 'type': 'article'} for a in articles}
+seo_metadata.update({key: {'description': values[2]} for key, values in cats.items()})
+seo_metadata.update({'partituras/' + key: {'description': group.description} for key, group in catalog.groups.items()})
+seo_metadata.update({score.route: {'description': score.description} for score in catalog.scores})
+seo_aliases = {'musica': 'partituras', 'musica/msa': 'partituras/msa'}
+seo_aliases.update({score.legacy: score.route for score in catalog.scores if score.legacy})
+finish_seo(OUT, BASE, json.loads((ROOT/'seo.json').read_text()), seo_metadata, seo_aliases)
 finish_build(OUT, BASE)

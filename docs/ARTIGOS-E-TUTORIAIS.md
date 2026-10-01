@@ -121,9 +121,9 @@ linha em branco entre o último campo e o texto. Use um valor por linha.
 | Campo | O que preencher | Comportamento atual |
 |---|---|---|
 | `Title` | Título completo do texto. | Aparece no cartão, na página e no título da aba. |
-| `Description` | Resumo curto, preferencialmente uma ou duas frases. | Aparece no cartão e abaixo do título da página. Não substitui a descrição HTML global do site. |
+| `Description` | Resumo curto, preferencialmente uma ou duas frases. | Aparece no cartão, abaixo do título, na descrição HTML e nos metadados de compartilhamento. |
 | `Category` | Uma das categorias da tabela abaixo. | Determina a seção em que o texto aparece. Um valor desconhecido interrompe a geração. |
-| `Image` | Caminho relativo a `assets/`, sem barra inicial. | Opcional: imagem do cartão. Sem o campo, aparece a ilustração de clave. |
+| `Image` | Caminho relativo a `assets/`, sem barra inicial. | Opcional: imagem do cartão e do compartilhamento. Sem o campo, o cartão usa a clave e o compartilhamento usa a imagem padrão do site. |
 
 Preencha sempre `Title`, `Description` e `Category`, mesmo que o gerador não
 aponte todos os campos vazios como erro.
@@ -183,7 +183,8 @@ informativos para que o índice lateral fique fácil de consultar.
 
 ## 5. Adicionar imagens
 
-A imagem do cabeçalho `Image` aparece **no cartão da listagem**. Ela não é
+A imagem do cabeçalho `Image` aparece **no cartão da listagem** e é usada
+como miniatura ao compartilhar o link. Ela não é
 inserida automaticamente no corpo do artigo.
 
 Para uma imagem própria, copie o arquivo para `assets/`. Uma organização
@@ -460,3 +461,23 @@ Category: links
 Substitua `https://example.com/` pelo endereço real antes de publicar.
 O canal Clave Sol Music está no rodapé de todas as páginas; esse link é
 definido no template compartilhado em `build.py`.
+
+## 12. Miniatura ao compartilhar e SEO
+
+O site gera os metadados automaticamente. Preencha `Title`, `Description` e
+`Image` como de costume. Para escolher uma imagem diferente apenas para o
+compartilhamento, adicione os campos opcionais:
+
+```text
+SocialImage: artigos/meu-artigo/compartilhar.jpg
+SocialImageAlt: Descrição visual da imagem de compartilhamento
+```
+
+O caminho é relativo a `assets/`, sem `{{BASE}}`; o arquivo precisa existir.
+Sem `SocialImage`, usa-se `Image`. Sem ambos, usa-se a foto de clarinete
+configurada em `seo.json`. Imagens inseridas apenas no corpo do artigo não
+são escolhidas automaticamente como miniatura (por exemplo, um QR Code Pix).
+
+Veja [SEO e compartilhamento](SEO.md) para configuração e verificação após
+publicar. A publicação e o cache do aplicativo de destino influenciam quando
+uma miniatura nova aparece; o build local não atualiza links já compartilhados.

@@ -76,3 +76,11 @@ O gerador adiciona `?v=<hash>` às URLs dos arquivos locais: CSS, JavaScript, im
 Cada publicação gera `version.json`. Ao abrir a página ou voltar a uma aba (no máximo uma consulta por minuto), um pequeno script verifica se existe uma versão diferente e oferece **Atualizar** ou **Depois**. Os links internos de páginas levam `_cs=<versão>`, preservando a versão ao navegar; downloads e links externos não são alterados. A versão aceita fica registrada no armazenamento local do navegador, quando disponível. Ao entrar ou voltar pelo histórico a uma página antiga, o script recupera automaticamente uma versão já aceita, após confirmá-la no manifesto. Uma consulta ao voltar à aba nunca provoca recarga automática durante a leitura ou reprodução. Se uma URL já pedir a versão atual e o servidor ainda entregar HTML antigo, o script oferece tentativa manual com uma URL nova, sem entrar em ciclo de recargas. Falhas de rede não impedem a leitura.
 
 O HTML ainda respeita o cache HTTP da hospedagem, atualmente de 10 minutos no GitHub Pages. O aviso só funciona em páginas que já receberam esta implementação; páginas antigas podem precisar de uma atualização manual inicial. Ao mudar o domínio no Pages, execute novamente a ação de publicação para regenerar o caminho base.
+
+## SEO e compartilhamento
+
+O arquivo `seo.json` centraliza o domínio, a descrição e a imagem padrão.
+O build inclui Open Graph, Twitter Cards, URLs canônicas e dados estruturados
+em cada página, além de gerar `sitemap.xml` e `robots.txt`. Artigos usam seus
+campos `Title`, `Description` e `Image`; `SocialImage` permite uma capa exclusiva
+para compartilhamento. Veja [o guia de SEO](docs/SEO.md).
