@@ -26,7 +26,7 @@ def one_line(value):
     return ' '.join(str(value).split())
 
 
-def prepare(source, method, *, root=ROOT, slug=None, title=None, lesson=None,
+def prepare(source, method=None, *, msa=False, root=ROOT, slug=None, title=None, lesson=None,
             method_title=None, executable=None, update=False, pdf=False, tempo=None):
     from score_catalog import load_catalog, safe_key, validate_timing, read_markdown
     from musicxml_audio import parse_musicxml
@@ -36,13 +36,24 @@ def prepare(source, method, *, root=ROOT, slug=None, title=None, lesson=None,
     root = Path(root).resolve()
     if not source.is_file() or source.suffix.lower() != '.mscz':
         raise ValueError('Informe o caminho de um arquivo .mscz existente, contendo somente esta lição.')
-    method = safe_key(method)
+    if msa and method:
+        raise ValueError('Escolha --msa ou --metodo, não ambos.')
+    if msa and method_title:
+        raise ValueError('--nome-metodo só pode ser usado com métodos.')
+    if not msa:
+        method = safe_key(method)
     slug = safe_key(slug or slugify(source.stem))
-    if '/' in method or '/' in slug:
+    if (method and '/' in method) or '/' in slug:
         raise ValueError('Método e lição devem ser nomes simples, sem barras.')
-    key = f'metodos/{method}/{slug}'
+    key = f'msa/{slug}' if msa else f'metodos/{method}/{slug}'
     md = root / 'partituras' / f'{key}.md'
-    assets = root / 'assets/music' / key
+    if md.exists() and not md.is_file():
+        raise ValueError(f'O cadastro deve ser um arquivo Markdown, não uma pasta: {md}')
+    existing_meta = read_markdown(md)[0] if md.is_file() else {}
+    asset_key = safe_key(existing_meta.get('assets', f'music/{key}'))
+    assets = root / 'assets' / asset_key
+    if not assets.resolve().is_relative_to((root / 'assets').resolve()):
+        raise ValueError('Assets deve ficar dentro da pasta assets do projeto.')
     for path in (md, assets):
         if not path.resolve().is_relative_to(root):
             raise ValueError('O destino não pode apontar para fora do projeto.')
@@ -54,7 +65,6 @@ def prepare(source, method, *, root=ROOT, slug=None, title=None, lesson=None,
         raise ValueError(f'O cadastro deve ser um arquivo Markdown, não uma pasta: {md}')
     if source.is_relative_to(assets.resolve()):
         raise ValueError('Use o original fora da pasta de assets; ela será substituída na atualização.')
-    existing_meta = read_markdown(md)[0] if md.is_file() else {}
     tempo = tempo if tempo is not None else existing_meta.get('tempo')
     if any(existing_meta.get(k) for k in ('pages', 'measures')) and not update:
         raise ValueError('Use --atualizar para renovar o cadastro existente.')
@@ -70,7 +80,7 @@ def prepare(source, method, *, root=ROOT, slug=None, title=None, lesson=None,
     # Stage everything before changing the working tree; no git command is executed.
     with tempfile.TemporaryDirectory(prefix='clavesol-') as directory:
         stage = Path(directory)
-        output = stage / 'assets/music' / key
+        output = stage / 'assets' / asset_key
         output.mkdir(parents=True)
         env = dict(os.environ, QT_QPA_PLATFORM='offscreen')
 
@@ -109,8 +119,6 @@ def prepare(source, method, *, root=ROOT, slug=None, title=None, lesson=None,
         instrument = next((e.text for e in xml.iter('part-name') if e.text), '')
         if md.exists():
             meta, _ = read_markdown(md)
-            if meta.get('assets', f'music/{key}') != f'music/{key}':
-                raise ValueError('O Markdown usa Assets personalizado. Ajuste-o antes de importar para este destino.')
             original = md.read_text(encoding='utf-8')
             header, separator, body = original, '\n\n', ''
             split = re.split(r'\r?\n[ \t]*\r?\n', original, maxsplit=1)
@@ -140,7 +148,7 @@ def prepare(source, method, *, root=ROOT, slug=None, title=None, lesson=None,
         for tree in ('partituras', 'assets'):
             if (root / tree).exists():
                 shutil.copytree(root / tree, validation / tree)
-        vassets = validation / 'assets/music' / key
+        vassets = validation / 'assets' / asset_key
         if vassets.exists(): shutil.rmtree(vassets)
         shutil.copytree(output, vassets)
         vmd = validation / 'partituras' / f'{key}.md'
@@ -167,13 +175,26 @@ def prepare(source, method, *, root=ROOT, slug=None, title=None, lesson=None,
             if old_md is not None: md.write_bytes(old_md)
             elif md.exists(): md.unlink()
             raise
-        for path, heading in [(root/'partituras/metodos/_index.md', 'Métodos'),
-                              (md.parent/'_index.md', method_title or method.replace('-', ' ').title())]:
+        indices = [(md.parent/'_index.md', 'MSA')] if msa else [
+            (root/'partituras/metodos/_index.md', 'Métodos'),
+            (md.parent/'_index.md', method_title or method.replace('-', ' ').title())]
+        for path, heading in indices:
             if not path.exists(): path.write_text(f'Title: {one_line(heading)}\n', encoding='utf-8')
         print(f'Pronto: {key}\n{len(svgs)} página(s), {sequence["duration"]:g}s, {sequence["marking"]}')
         if abs(reported - sequence['duration']) > .05:
             print(f'Duração arredondada do MuseScore normalizada: {reported:g}s → {sequence["duration"]:g}s; posições preservadas.')
         return key
+
+
+def lesson_paths(root, key):
+    from score_catalog import read_markdown
+    meta, _ = read_markdown(Path(root) / 'partituras' / f'{key}.md')
+    paths = [f'partituras/{key}.md', 'assets/' + meta.get('assets', f'music/{key}')]
+    parent = key.rsplit('/', 1)[0]
+    if key.startswith('metodos/'):
+        paths.append('partituras/metodos/_index.md')
+    paths.append(f'partituras/{parent}/_index.md')
+    return paths
 
 
 def commit_lesson(root, paths, message):
@@ -192,7 +213,9 @@ def main():
             os.execv(str(interpreter), [str(interpreter), str(Path(__file__).resolve()), *sys.argv[1:]])
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('arquivo', type=Path, help='Caminho completo da lição.mscz')
-    parser.add_argument('--metodo', help='Pasta do método, por exemplo domingos-pecci')
+    destination = parser.add_mutually_exclusive_group()
+    destination.add_argument('--metodo', help='Pasta do método, por exemplo domingos-pecci')
+    destination.add_argument('--msa', action='store_true', help='Importa diretamente na categoria MSA')
     parser.add_argument('--slug', help='Nome da lição no site; padrão: nome do .mscz normalizado')
     parser.add_argument('--titulo', help='Título da lição')
     parser.add_argument('--nome-metodo', help='Título de uma coleção nova')
@@ -204,9 +227,11 @@ def main():
     parser.add_argument('--tempo', type=float, help='Semínimas/minuto, somente se o MusicXML não informar andamento')
     args = parser.parse_args()
     method = args.metodo
-    if not method:
+    if args.msa and args.nome_metodo:
+        parser.error('--nome-metodo só pode ser usado com métodos.')
+    if not method and not args.msa:
         if not sys.stdin.isatty():
-            parser.error('Informe --metodo para execução sem perguntas.')
+            parser.error('Informe --metodo ou --msa para execução sem perguntas.')
 
         available = sorted(
             p.name for p in (ROOT / 'partituras/metodos').glob('*')
@@ -232,15 +257,15 @@ def main():
         method = available[index - 1]
     if args.licao is not None and args.licao <= 0: parser.error('--licao deve ser positivo')
     try:
-        key = prepare(args.arquivo, method, slug=args.slug, title=args.titulo,
+        key = prepare(args.arquivo, method, msa=args.msa, slug=args.slug, title=args.titulo,
                       method_title=args.nome_metodo, lesson=args.licao, executable=args.musescore,
                       update=args.atualizar, pdf=args.pdf, tempo=args.tempo)
     except ImportError:
         parser.exit(1, 'Ative o ambiente do projeto: source .venv/bin/activate\nDepois: pip install -r requirements.txt\n')
     except (ValueError, OSError, KeyError, ET.ParseError) as error:
         parser.exit(1, f'Não foi possível preparar a lição: {error}\n')
+    paths = lesson_paths(ROOT, key)
     if args.commit:
-        paths = [f'partituras/{key}.md', f'assets/music/{key}'] + ['partituras/metodos/_index.md', f'partituras/{key.rsplit("/",1)[0]}/_index.md']
         try:
             commit_lesson(ROOT, paths, f'Prepara lição {key}')
         except (subprocess.CalledProcessError, ValueError) as error:
@@ -248,7 +273,7 @@ def main():
         print('\nPreparado e commitado. Para publicar: git push origin main')
         return
     print('\nRevise e publique, na raiz do projeto:')
-    print(f'git add partituras/metodos/_index.md partituras/{key.rsplit("/",1)[0]}/_index.md partituras/{key}.md assets/music/{key}/')
+    print('git add ' + ' '.join(paths))
     print(f'git commit -m "Adiciona ou atualiza {key}"\ngit push origin main')
 
 

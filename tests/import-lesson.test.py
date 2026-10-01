@@ -9,7 +9,7 @@ from unittest.mock import patch
 from types import SimpleNamespace
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-from criar_licao import prepare, commit_lesson
+from criar_licao import prepare, commit_lesson, lesson_paths, main
 import subprocess
 from score_catalog import load_catalog
 
@@ -47,6 +47,39 @@ class ImportTests(unittest.TestCase):
             self.assertEqual((a/'score.mscz').read_bytes(),b'original')
         self.assertEqual(self.source.read_bytes(),b'original')
 
+    def test_msa_assets_index_and_independent_method(self):
+        key = prepare(self.source, msa=True, root=self.root, slug='licao-20', lesson=20, pdf=True, executable='musescore')
+        self.assertEqual(key, 'msa/licao-20')
+        self.assertEqual((self.root/'partituras/msa/_index.md').read_text(), 'Title: MSA\n')
+        self.assertFalse((self.root/'partituras/metodos').exists())
+        assets = self.root/'assets/music/msa/licao-20'
+        self.assertTrue(all((assets/name).is_file() for name in ['score.musicxml','score-1.svg','timing.json','score.mscz','score.pdf']))
+        self.assertEqual(lesson_paths(self.root, key), ['partituras/msa/licao-20.md','assets/music/msa/licao-20','partituras/msa/_index.md'])
+        self.run_import(slug='licao-20')
+        catalog = load_catalog(self.root)
+        self.assertEqual({s.key for s in catalog.scores}, {'msa/licao-20','metodos/pecci/licao-20'})
+
+    def test_update_existing_msa_preserves_legacy_assets_and_text(self):
+        md = self.root/'partituras/msa/107-msa-bb.md'
+        md.parent.mkdir(parents=True)
+        md.write_text('Title: Meu estudo\nAssets: music/107-msa-bb\nLegacy: musica/msa/107-msa-bb\n\nMeu texto.\n')
+        index = md.parent/'_index.md'
+        index.write_text('Title: MSA\nDescription: Minha descrição.\n')
+        original_index = index.read_bytes()
+        key = prepare(self.source, msa=True, root=self.root, slug='107-msa-bb', update=True, executable='musescore')
+        self.assertIn('Meu texto.', md.read_text())
+        self.assertIn('Legacy: musica/msa/107-msa-bb', md.read_text())
+        self.assertEqual(index.read_bytes(), original_index)
+        self.assertTrue((self.root/'assets/music/107-msa-bb/score.mscz').is_file())
+        self.assertFalse((self.root/'assets/music/msa/107-msa-bb').exists())
+        self.assertIn('assets/music/107-msa-bb', lesson_paths(self.root, key))
+        self.assertEqual(load_catalog(self.root).scores[0].legacy, 'musica/msa/107-msa-bb')
+
+    def test_msa_and_method_are_mutually_exclusive(self):
+        with self.assertRaisesRegex(ValueError, 'não ambos'):
+            self.run_import(msa=True)
+        self.assertEqual(self.mock.call_count, 0)
+
     def test_update_preserves_text_and_cleans_old_pages(self):
         self.run_import(slug='licao-20')
         md=self.root/'partituras/metodos/pecci/licao-20.md'
@@ -77,6 +110,22 @@ class ImportTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'incomplete'):
             self.run_import()
         self.assertFalse((self.root/'assets').exists())
+
+class CliTests(unittest.TestCase):
+    def test_msa_does_not_prompt_and_reports_msa_paths(self):
+        from io import StringIO
+        with patch('sys.argv', ['criar_licao.py', '/tmp/licao.mscz', '--msa']), patch('builtins.input') as prompt, patch('criar_licao.prepare', return_value='msa/licao') as importer, patch('criar_licao.lesson_paths', return_value=['partituras/msa/licao.md','assets/music/msa/licao','partituras/msa/_index.md']), patch('sys.stdout', new_callable=StringIO) as output:
+            main()
+            prompt.assert_not_called()
+            self.assertTrue(importer.call_args.kwargs['msa'])
+            self.assertIn('git add partituras/msa/licao.md', output.getvalue())
+            self.assertNotIn('metodos/', output.getvalue())
+
+    def test_cli_rejects_mixed_destinations_before_export(self):
+        with patch('sys.argv', ['criar_licao.py', '/tmp/licao.mscz', '--msa', '--metodo', 'pecci']), patch('sys.stderr'), patch('criar_licao.prepare') as importer:
+            with self.assertRaises(SystemExit) as error: main()
+            self.assertEqual(error.exception.code, 2)
+            importer.assert_not_called()
 
 class CommitTests(unittest.TestCase):
     def test_commits_only_lesson_and_preserves_other_staged_changes(self):
