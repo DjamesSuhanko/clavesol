@@ -3,7 +3,6 @@ Description: Consulte os principais comandos para inserir notas, cifras, compass
 Category: tutoriais
 Image: musescore.webp
 
-# MuseScore 4: guia rápido para edição de partituras
 
 O MuseScore 4 oferece muitos recursos de edição, mas vários deles ficam espalhados entre atalhos, paletas, propriedades e menus. Enquanto você ainda está se acostumando com o programa, é útil ter uma referência rápida para as tarefas mais comuns.
 
