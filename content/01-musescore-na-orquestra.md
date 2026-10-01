@@ -11,7 +11,7 @@ Para quem toca em conjunto, ter uma partitura legível é o primeiro passo. Ante
 
 ## Do arquivo à estante
 
-No Clave Sol, o estudo **107 — MSA — Bb**, de P. Bona, está disponível como partitura e como áudio de clarinete. A página acompanha a reprodução com um cursor e permite reduzir a velocidade para praticar.
+No menu **[Partituras](https://clavesol.com.br/partituras/)**, estão dispostos hinos, lições de métodos e lições do MSA, próprio para instrumentos em **Bb** principalmente. A página acompanha a reprodução com um cursor e permite reduzir a velocidade para praticar. No **[MuseScore Studio](https://musescore.org/en/download)** é fácil transportar para instrumentos **C**, **Eb** etc.
 
 [Abra a partitura e experimente]({{BASE}}/musica/msa/107-msa-bb/).
 
