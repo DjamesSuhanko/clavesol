@@ -205,10 +205,31 @@ def main():
     args = parser.parse_args()
     method = args.metodo
     if not method:
-        if not sys.stdin.isatty(): parser.error('Informe --metodo para execução sem perguntas.')
-        available = sorted(p.name for p in (ROOT/'partituras/metodos').glob('*') if p.is_dir() and p.name != 'assets')
-        if available: print('Métodos existentes: ' + ', '.join(available))
-        method = input('Pasta do método (ex.: domingos-pecci): ').strip()
+        if not sys.stdin.isatty():
+            parser.error('Informe --metodo para execução sem perguntas.')
+
+        available = sorted(
+            p.name for p in (ROOT / 'partituras/metodos').glob('*')
+            if p.is_dir() and p.name != 'assets'
+        )
+        if not available:
+            parser.error('Nenhum método disponível. Informe --metodo para criar ou selecionar um método.')
+
+        print('Métodos disponíveis:')
+        for index, name in enumerate(available, 1):
+            print(f'  {index}) {name}')
+
+        choice = input('Digite o número do método: ').strip()
+        if not choice:
+            parser.error('É obrigatório informar o número do método.')
+        if not choice.isdigit():
+            parser.error('Informe somente o número correspondente ao método desejado.')
+
+        index = int(choice)
+        if not 1 <= index <= len(available):
+            parser.error(f'Número de método inválido. Escolha um valor entre 1 e {len(available)}.')
+
+        method = available[index - 1]
     if args.licao is not None and args.licao <= 0: parser.error('--licao deve ser positivo')
     try:
         key = prepare(args.arquivo, method, slug=args.slug, title=args.titulo,
