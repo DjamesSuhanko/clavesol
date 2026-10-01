@@ -4,6 +4,9 @@ Blog musical estático, gerado com Python + Markdown e publicado no GitHub Pages
 
 ## Escrever um artigo
 
+Consulte o [roteiro completo de artigos e tutoriais](docs/ARTIGOS-E-TUTORIAIS.md),
+com modelos, imagens, links, rascunhos, prévia e publicação.
+
 Crie um arquivo em `content/`, por exemplo `meu-artigo.md`:
 
 ```md
