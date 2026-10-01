@@ -135,7 +135,7 @@ Categorias editoriais aceitas:
 | `artigos` | Artigos |
 | `tutoriais` | Tutoriais |
 | `gem` | GEM — Grupo de Ensino Musical |
-| `doacoes` | Doações |
+| `doar` | Doações |
 | `luthier` | Luthier |
 | `links` | Links — Aplicativos musicais |
 
@@ -373,7 +373,7 @@ As três categorias usam o mesmo sistema de artigos: cada arquivo `.md` em
 definindo a URL `/artigos/<nome>/`. Esses textos também aparecem no índice
 Artigos, junto com os das demais categorias.
 
-- **Doações:** use `Category: doacoes`. Crie um arquivo por modalidade,
+- **Doações:** use `Category: doar`. Crie um arquivo por modalidade,
   como instrumentos, dinheiro ou materiais. No texto, explique o que é aceito
   e como contribuir. Inclua os contatos ou dados de pagamento que deseja publicar.
 - **Luthier:** use `Category: luthier`. Crie um arquivo para cada serviço
@@ -407,12 +407,26 @@ Image: violin.jpg
 
 ### Exemplo de Doações
 
-Salve como `content/doacoes-instrumentos.md` e preencha os dados reais:
+O menu continua se chamando **Doações**, com endereço `/doar/`. O valor do
+cabeçalho é **`Category: doar`**. Cada texto aparece tanto em Doações quanto
+no índice geral Artigos.
+
+Há três artigos protótipo prontos para você editar:
+
+- `content/07-doar-instrumentos.md` — Doar Instrumentos.
+- `content/08-doar-material.md` — Doar Material.
+- `content/09-fundo-de-manutencao.md` — Fundo de Manutenção.
+
+Eles entram normalmente na publicação; substitua os textos introdutórios
+pelas informações de cada modalidade quando estiverem definidas.
+
+O arquivo `content/07-doar-instrumentos.md` já existe. Para editar esse protótipo,
+use a estrutura abaixo e preencha os dados reais:
 
 ```md
 Title: Doação de instrumentos
 Description: Saiba como contribuir com instrumentos musicais.
-Category: doacoes
+Category: doar
 
 ## Quais instrumentos são aceitos
 

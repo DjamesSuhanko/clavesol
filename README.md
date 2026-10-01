@@ -20,7 +20,7 @@ Image: piano.jpg
 Escreva aqui em Markdown.
 ```
 
-Categorias aceitas: `gem`, `artigos`, `doacoes`, `luthier`, `links`, `tutoriais`. `Image` é opcional e aponta para um arquivo em `assets/`. O nome do arquivo define o endereço `/artigos/meu-artigo/`. Doações, Luthier e Links também usam cards que abrem o texto completo. Em Links, coloque o endereço do aplicativo no corpo do artigo; em Doações, crie um texto para cada forma de contribuição. Os artigos entram automaticamente na seção indicada e no índice Artigos. Os três primeiros arquivos, em ordem de nome, aparecem na página inicial. Links internos em Markdown devem começar com `{{BASE}}/` para funcionar no domínio próprio e no endereço de projeto do GitHub Pages.
+Categorias aceitas: `gem`, `artigos`, `doar`, `luthier`, `links`, `tutoriais`. `Image` é opcional e aponta para um arquivo em `assets/`. O nome do arquivo define o endereço `/artigos/meu-artigo/`. Doações, Luthier e Links também usam cards que abrem o texto completo. Em Links, coloque o endereço do aplicativo no corpo do artigo; em Doações, crie um texto para cada forma de contribuição. Os artigos entram automaticamente na seção indicada e no índice Artigos. Os três primeiros arquivos, em ordem de nome, aparecem na página inicial. Links internos em Markdown devem começar com `{{BASE}}/` para funcionar no domínio próprio e no endereço de projeto do GitHub Pages.
 
 Edite pelo GitHub e faça commit na branch `main`. A ação Publicar Clave Sol gera e publica o site automaticamente.
 
