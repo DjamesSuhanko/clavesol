@@ -53,7 +53,7 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(load_catalog(self.root).scores, [])
 
     def test_download_only_and_audio_without_cursor(self):
-        self.score(files={'score.musicxml': '<score-partwise/>', 'score.mp3': 'audio fixture'})
+        self.score(extra='Playback: recorded', files={'score.musicxml': '<score-partwise/>', 'score.mp3': 'audio fixture'})
         catalog = load_catalog(self.root)
         out = self.root / 'out'
         build_music(out, '', lambda title, body: body, catalog)
@@ -62,6 +62,25 @@ class CatalogTests(unittest.TestCase):
         self.assertIn('<audio', body)
         self.assertNotIn('score-zoom', body)
         self.assertNotIn('data-timing', body)
+
+    def test_generated_player_without_recording_and_duration_validation(self):
+        xml = '<score-partwise><part><measure><sound tempo="60"/><note><pitch><step>C</step><octave>4</octave></pitch><duration>1</duration></note></measure></part></score-partwise>'
+        self.score(files={'score.musicxml': xml, 'score-1.svg': SVG})
+        catalog = load_catalog(self.root)
+        score = catalog.scores[0]
+        self.assertEqual(score.playback, 'generated')
+        self.assertEqual(score.audio, [])
+        self.assertEqual(score.sequence['duration'], 1)
+        out = self.root / 'out'
+        build_music(out, '/clavesol', lambda title, body: body, catalog)
+        body = (out / 'partituras/metodos/pecci/licao-27/index.html').read_text()
+        self.assertIn('data-sequence="/clavesol/assets/', body)
+        self.assertIn('Mudo para solfejo', body)
+        self.assertNotIn('<audio', body)
+        timing = dict(duration=2, events=[dict(time=0, page=1, measure=1, x=1, y=1, width=2, height=2)])
+        self.write('assets/music/metodos/pecci/licao-27/timing.json', json.dumps(timing))
+        with self.assertRaisesRegex(ValueError, 'durações diferentes'):
+            load_catalog(self.root)
 
     def test_multi_page_cursor(self):
         event = dict(time=0, page=1, measure=1, x=10, y=10, width=3, height=5)

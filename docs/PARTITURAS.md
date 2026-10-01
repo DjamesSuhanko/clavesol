@@ -38,7 +38,7 @@ mkdir -p assets/music/metodos/domingos-pecci/licao-27
 
 Execute a cópia apenas para criar uma coleção nova, sem substituir arquivos que você já editou. O modelo começa com `Draft: true`; portanto a lição só será publicada quando você trocar para `false`.
 
-Coloque os arquivos exportados na pasta de assets acima. Para começar, basta **um SVG**, ou um arquivo **MusicXML, PDF ou MSCZ** para download. SVG permite leitura e zoom na própria página. MusicXML sozinho oferece download, sem converter a notação no navegador.
+Coloque os arquivos exportados na pasta de assets acima. Para começar, basta **um SVG**, ou um arquivo **MusicXML, PDF ou MSCZ** para download. SVG permite leitura e zoom na própria página. MusicXML sozinho oferece download e som gerado no navegador; para exibir a notação, forneça também os SVGs.
 
 Edite `partituras/metodos/domingos-pecci/licao-27.md`:
 
@@ -88,8 +88,12 @@ O gerador procura os assets em `assets/music/` seguido do mesmo caminho do Markd
 | `Draft: true` | Não gera página nem cartão; arquivos ainda não são exigidos. |
 | `Pages` | Opcional: confere a quantidade de SVGs. Normalmente é detectada. |
 | `Measures` | Opcional: total de compassos. Detectado do mapa quando há cursor. |
-| `Audio: false` | Oculta o player mesmo que haja áudio. Por padrão, detecta MP3/Ogg. |
-| `Cursor: false` | Desativa o cursor. Por padrão, detecta timing + áudio + SVGs. |
+| `Playback: generated` | Gera o som a partir de `score.musicxml`. É o padrão quando esse arquivo existe. |
+| `Playback: recorded` | Usa `score.mp3` e/ou `score.ogg` exportado no MuseScore. |
+| `Playback: none` | Oculta o player, mantendo leitura e downloads. |
+| `Tempo: 60` | Opcional: substitui o andamento por 60 semínimas/minuto. Sem esse campo, usa o andamento do MusicXML. |
+| `Audio: false` | Forma antiga de ocultar o player. `Playback`, se informado, tem prioridade. |
+| `Cursor: false` | Desativa o cursor. Por padrão, detecta timing + player + SVGs. |
 | `Audio: true` / `Cursor: true` | Exige os arquivos necessários, apontando erro se faltarem. |
 | `Legacy` | Para migração de URLs antigas em `musica/`; não é necessário em novas lições. |
 
@@ -99,7 +103,13 @@ Os SVGs devem ser consecutivos: `score-1.svg`, `score-2.svg` etc. Todas as pági
 
 ## Áudio e cursor
 
-Exporte `score.mp3` e/ou `score.ogg` pelo MuseScore a partir da mesma revisão da partitura. Basta um dos dois para ativar reprodução e velocidade. Sem `timing.json`, o player funciona sem cursor.
+Exporte `score.musicxml` pelo MuseScore. O gerador converte as notas automaticamente em `sequence.json`, e o navegador produz o som com um timbre simples de estudo. Não precisa exportar MP3/Ogg para cada lição. Quando usa som gerado, as gravações da pasta não entram na publicação; os originais locais são preservados.
+
+O player permite reproduzir, pausar, voltar ao início, avançar para um trecho e mudar a velocidade entre 50% e 150%, sem mudar a afinação. **Mudo para solfejo** silencia o som mantendo tempo e cursor. O relógio mostra a posição na lição no andamento original; a velocidade altera o tempo real necessário para percorrê-la. Não há reprodução automática.
+
+O andamento vem do MusicXML, inclusive unidades pontuadas e mudanças durante a peça. Se não houver andamento, informe `Tempo` em semínimas por minuto. O suporte inclui notas, pausas, acordes, vozes, ligaduras de prolongamento e transposição do instrumento. Não reproduz o realismo, os efeitos e a expressividade do MuseScore. Repetições, casas, saltos, notas de adorno e percussão exigem `Playback: recorded`; a geração rejeita esses recursos para evitar uma reprodução incompleta.
+
+Para usar uma gravação, informe `Playback: recorded` e exporte `score.mp3` e/ou `score.ogg` pelo MuseScore a partir da mesma revisão da partitura. Sem MusicXML, o áudio gravado é detectado automaticamente. Sem `timing.json`, ambos os modos funcionam sem cursor.
 
 Para gerar o cursor, exporte o JSON de mídia com `--score-media` no MuseScore e passe o JSON puro (sem mensagens de inicialização) ao conversor:
 
@@ -107,7 +117,7 @@ Para gerar o cursor, exporte o JSON de mídia com `--score-media` no MuseScore e
 python scripts/score_timing.py /caminho/media.json assets/music/metodos/domingos-pecci/licao-27
 ```
 
-Esse comando extrai **todos os SVGs do próprio JSON** e gera `timing.json`, mantendo páginas e coordenadas da mesma exportação. Se já houver SVGs ou timing, confira os arquivos e use `--force` para substituí-los. O áudio e os downloads continuam sendo exportados separadamente da mesma revisão. Não renumere ou recorte os SVGs depois de gerar o mapa.
+Esse comando extrai **todos os SVGs do próprio JSON** e gera `timing.json`, mantendo páginas e coordenadas da mesma exportação. Se já houver SVGs ou timing, confira os arquivos e use `--force` para substituí-los. Exporte o MusicXML (ou o áudio gravado, conforme o modo) e os downloads separadamente, sempre da mesma revisão. No modo gerado, a duração do mapa deve coincidir com a sequência; ao alterar o andamento ou a partitura, reexporte também o mapa. Não renumere ou recorte os SVGs depois de gerar o mapa.
 
 A escala padrão é 12, correspondente à exportação MSA usada neste projeto. Para outra resolução do MuseScore, informe `--scale`; o conversor valida os limites das posições, mas a sincronização e o alinhamento devem ser conferidos com o áudio no navegador.
 

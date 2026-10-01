@@ -7,6 +7,7 @@ import re
 import xml.etree.ElementTree as ET
 
 import markdown
+from musicxml_audio import parse_musicxml
 
 
 @dataclass
@@ -29,6 +30,8 @@ class Score:
     pages: list
     downloads: list
     audio: list
+    playback: str
+    sequence: dict | None
     timing: bool
     measures: int
     lesson: int
@@ -178,16 +181,42 @@ def load_catalog(root):
                 raise ValueError('Adicione SVGs ou ao menos um arquivo para baixar (MusicXML, PDF ou MSCZ)')
             audio = [(name, mime) for name, mime in [('score.ogg', 'audio/ogg'), ('score.mp3', 'audio/mpeg')]
                      if (folder / name).is_file()]
-            if not flag(meta, 'audio', bool(audio)):
+            requested = meta.get('playback', '').strip().lower()
+            if requested and requested not in ('generated', 'recorded', 'none'):
+                raise ValueError('Playback: use generated, recorded ou none')
+            if not requested:
+                if 'audio' in meta and not flag(meta, 'audio'):
+                    requested = 'none'
+                elif (folder / 'score.musicxml').is_file():
+                    requested = 'generated'
+                elif audio:
+                    requested = 'recorded'
+                else:
+                    requested = 'none'
+            if not meta.get('playback') and requested == 'none' and 'audio' in meta and flag(meta, 'audio'):
+                raise ValueError('Audio: true exige MusicXML ou score.ogg/score.mp3')
+            sequence = None
+            if requested == 'generated':
+                musicxml = folder / 'score.musicxml'
+                if not musicxml.is_file():
+                    raise ValueError('Playback: generated exige score.musicxml')
+                tempo = meta.get('tempo')
+                sequence = parse_musicxml(musicxml, tempo)
                 audio = []
-            elif not audio:
-                raise ValueError('Audio: true exige score.ogg ou score.mp3')
-            timing = flag(meta, 'cursor', bool(audio and pages and (folder / 'timing.json').is_file()))
+            elif requested == 'recorded':
+                if not audio:
+                    raise ValueError('Playback: recorded exige score.ogg ou score.mp3')
+            else:
+                audio = []
+            timing = flag(meta, 'cursor', bool(requested != 'none' and pages and (folder / 'timing.json').is_file()))
             count = 0
             if timing:
-                if not audio or not pages:
-                    raise ValueError('Cursor exige SVGs, áudio e timing.json')
-                count = validate_timing(json.loads((folder / 'timing.json').read_text()), len(pages))
+                if requested == 'none' or not pages or not (folder / 'timing.json').is_file():
+                    raise ValueError('Cursor exige player, SVGs e timing.json')
+                timing_data = json.loads((folder / 'timing.json').read_text())
+                count = validate_timing(timing_data, len(pages))
+                if sequence and abs(timing_data['duration'] - sequence['duration']) > .05:
+                    raise ValueError('MusicXML e timing.json têm durações diferentes; exporte ambos da mesma revisão')
             measures = positive_int(meta['measures'], 'Measures') if 'measures' in meta else count
             if measures < count:
                 raise ValueError('Measures é menor que o último compasso do cursor')
@@ -204,7 +233,7 @@ def load_catalog(root):
                 group('/'.join(key.split('/')[:length]))
             scores.append(Score(key, title, meta.get('author', ''), meta.get('instrument', ''),
                                 meta.get('description', ''), body, asset_key, pages, downloads,
-                                audio, timing, measures, lesson, legacy))
+                                audio, requested, sequence, timing, measures, lesson, legacy))
         except (ValueError, KeyError, TypeError, OSError, ET.ParseError) as error:
             raise ValueError(f'{source.relative_to(root)}: {error}') from error
     for score in scores:

@@ -40,12 +40,16 @@ def score_body(score, catalog, base):
     for name, label in score.downloads:
         toolbar += f'<a class="button" href="{assets}/{name}" download>Baixar {label}</a>'
     player = ''
-    if score.audio:
+    if score.playback == 'generated':
+        timing = f' data-timing="{assets}/timing.json"' if score.timing else ''
+        follow = '<label><input id="follow-cursor" type="checkbox" checked> Acompanhar cursor</label><span id="current-measure"></span>' if score.timing else ''
+        player = f'''<div class="score-player" id="score-player" data-playback="generated" data-sequence="{assets}/sequence.json"{timing} data-measures="{score.measures}"><div class="player-main"><button id="play-toggle" class="play-toggle" type="button">Reproduzir</button><input id="playback-progress" type="range" min="0" max="1000" value="0" aria-label="Posição da reprodução"><span id="playback-time">0:00 / 0:00</span></div><div class="player-options"><button id="restart-score" type="button">Voltar ao início</button><label for="playback-speed">Velocidade</label><select id="playback-speed"><option value="0.5">50%</option><option value="0.75">75%</option><option value="1" selected>Original</option><option value="1.25">125%</option><option value="1.5">150%</option></select><span id="tempo-display">Andamento: {E(score.sequence['marking'])}</span><label><input id="mute-score" type="checkbox"> Mudo para solfejo</label>{follow}</div><p id="playback-status" role="status">Carregando partitura…</p></div>'''
+    elif score.audio:
         sources = ''.join(f'<source src="{assets}/{name}" type="{mime}">' for name, mime in score.audio)
         timing = f' data-timing="{assets}/timing.json"' if score.timing else ''
         follow = '<label><input id="follow-cursor" type="checkbox" checked> Acompanhar cursor</label><span id="current-measure"></span>' if score.timing else ''
         status = 'Carregando cursor…' if score.timing else 'Pronto para reproduzir'
-        player = f'''<div class="score-player"><audio id="score-audio" controls preload="none"{timing} data-measures="{score.measures}">{sources}<a href="{assets}/{score.audio[0][0]}">Baixar áudio</a></audio><div class="player-options"><button id="restart-score" type="button">Voltar ao início</button><label for="playback-speed">Velocidade</label><select id="playback-speed"><option value="0.5">0,5×</option><option value="0.75">0,75×</option><option value="1" selected>Normal</option><option value="1.25">1,25×</option><option value="1.5">1,5×</option></select>{follow}</div><p id="playback-status" role="status">{status}</p></div>'''
+        player = f'''<div class="score-player" id="score-player" data-playback="recorded"{timing} data-measures="{score.measures}"><audio id="score-audio" controls preload="none">{sources}<a href="{assets}/{score.audio[0][0]}">Baixar áudio</a></audio><div class="player-options"><button id="restart-score" type="button">Voltar ao início</button><label for="playback-speed">Velocidade</label><select id="playback-speed"><option value="0.5">0,5×</option><option value="0.75">0,75×</option><option value="1" selected>Normal</option><option value="1.25">1,25×</option><option value="1.5">1,5×</option></select>{follow}</div><p id="playback-status" role="status">{status}</p></div>'''
     sheets = []
     page_links = []
     for number, (name, width, height) in enumerate(score.pages, 1):
@@ -55,7 +59,7 @@ def score_body(score, catalog, base):
     pager = f'<nav class="score-page-links" aria-label="Páginas da partitura">{"".join(page_links)}</nav>' if len(page_links) > 1 else ''
     notes = score.body.replace('{{BASE}}', base)
     subtitle = ' · '.join(filter(None, [score.author, score.instrument]))
-    script = f'<script type="module" src="{base}/assets/music.js"></script>' if score.pages or score.audio else ''
+    script = f'<script type="module" src="{base}/assets/music.js"></script>' if score.pages or score.playback != 'none' else ''
     return f'''<section class="article-layout score-section"><nav class="breadcrumbs" aria-label="Caminho da partitura">{'<span>/</span>'.join(crumbs)}</nav><p class="eyebrow">ESTANTE DE PARTITURAS</p><h1>{E(score.title)}</h1><p class="lead">{E(subtitle)}</p><p>{E(score.description)}</p><div class="score-toolbar">{toolbar}</div>{player}{pager}{''.join(sheets)}<article class="prose score-notes">{notes}</article></section>{script}'''
 
 

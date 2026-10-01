@@ -8,6 +8,14 @@ ROOT=Path(__file__).parent; OUT=ROOT/'dist'; BASE=os.environ.get('BASE_PATH','')
 catalog = load_catalog(ROOT)
 if OUT.exists(): shutil.rmtree(OUT)
 OUT.mkdir();shutil.copytree(ROOT/'assets',OUT/'assets')
+for score in catalog.scores:
+ if score.sequence:
+  folder=OUT/'assets'/score.assets
+  (folder/'sequence.json').write_text(json.dumps(score.sequence,separators=(',',':')))
+  # Generated playback does not publish the much larger optional recordings.
+  for name in (() if any(other.assets == score.assets and other.playback == 'recorded' for other in catalog.scores) else ('score.mp3','score.ogg')):
+   target=folder/name
+   if target.exists():target.unlink()
 E=html.escape
 cats={'gem':('GEM','Grupo de Ensino Musical','Fundamentos, leitura e prática para aprender em conjunto.'),'artigos':('Artigos','Tudo sobre música','Ideias e ferramentas para a música na orquestra e em casa.'),'luthier':('Luthier','Serviços de luthier','O cuidado com o instrumento também faz parte da música.'),'links':('Links','Aplicativos musicais','Ferramentas para escrever, ouvir e compreender o som.'),'tutoriais':('Tutoriais','Dicas e técnicas','Um passo de cada vez. Mais confiança a cada ensaio.')}
 def page(title,body):

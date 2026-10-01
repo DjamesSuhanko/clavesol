@@ -36,7 +36,7 @@ python -m http.server 8000 --directory dist
 
 A coleção musical do modelo Manual do Maker foi copiada integralmente, incluindo a partitura 107 — MSA — Bb, de P. Bona, seu SVG, MusicXML, MP3, Ogg e mapa de 172 posições. O endereço `/musica/msa/107-msa-bb/` foi preservado. A origem foi mantida intacta para evitar interromper links existentes.
 
-`music_pages.py` monta o leitor a partir dos cadastros em `partituras/`. `assets/music.js` controla zoom, velocidade e cursor em uma ou várias páginas. Áudio, downloads e cursor são opcionais; os controles só aparecem quando existem arquivos correspondentes. As posições usam o relógio do áudio; não há reprodução automática.
+`music_pages.py` monta o leitor a partir dos cadastros em `partituras/`. `assets/music.js` controla zoom, velocidade e cursor em uma ou várias páginas. Áudio, downloads e cursor são opcionais; os controles só aparecem quando existem arquivos correspondentes. O som é gerado no navegador a partir do MusicXML, com controle de andamento e modo mudo para solfejo. Cursor e notas usam o mesmo relógio. MP3/Ogg ficam opcionais com `Playback: recorded`; não há reprodução automática.
 
 Veja [como cadastrar categorias, métodos e lições](docs/PARTITURAS.md). O modelo de Domingos Pecci está em `templates/partituras/domingos-pecci/`, fora do catálogo publicado.
 

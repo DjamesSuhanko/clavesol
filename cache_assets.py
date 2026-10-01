@@ -8,9 +8,14 @@ from urllib.parse import urlsplit,parse_qsl,urlencode,urlunsplit
 def finish_build(out: Path, base: str):
     assets=out/'assets'
     # The browser caches imported modules independently of their entry script.
-    timing=sha256((assets/'music-timing.mjs').read_bytes()).hexdigest()[:16]
     music=assets/'music.js'
-    music.write_text(music.read_text().replace("'./music-timing.mjs'",f"'./music-timing.mjs?v={timing}'"))
+    source=music.read_text()
+    for dependency in ('music-timing.mjs','music-synth.mjs'):
+        module=assets/dependency
+        if module.is_file():
+            digest=sha256(module.read_bytes()).hexdigest()[:16]
+            source=source.replace(f"'./{dependency}'",f"'./{dependency}?v={digest}'")
+    music.write_text(source)
     hashes={p.relative_to(out).as_posix():sha256(p.read_bytes()).hexdigest()[:16]
             for p in assets.rglob('*') if p.is_file()}
     prefix=f'{base}/assets/'
@@ -24,7 +29,7 @@ def finish_build(out: Path, base: str):
         return f'{match.group(1)}="{revised}"'
     pages=sorted(out.rglob('*.html'))
     for p in pages:
-        p.write_text(re.sub(r'\b(href|src|data-timing)="([^"]+)"',version_url,p.read_text()))
+        p.write_text(re.sub(r'\b(href|src|data-timing|data-sequence)="([^"]+)"',version_url,p.read_text()))
     digest=sha256()
     for p in sorted(out.rglob('*')):
         if p.is_file():
