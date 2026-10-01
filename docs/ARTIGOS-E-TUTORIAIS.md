@@ -135,6 +135,7 @@ Categorias editoriais aceitas:
 | `artigos` | Artigos |
 | `tutoriais` | Tutoriais |
 | `gem` | GEM — Grupo de Ensino Musical |
+| `doacoes` | Doações |
 | `luthier` | Luthier |
 | `links` | Links — Aplicativos musicais |
 
@@ -361,6 +362,87 @@ que o texto aparece, mas a página continua em `/artigos/<nome-do-arquivo>/`.
 
 Renomear ou apagar o arquivo muda ou remove a URL. O gerador não cria
 redirecionamentos automaticamente: confira antes os links que apontam para
-essa página. Para adicionar uma categoria editorial além das cinco existentes,
+essa página. Para adicionar uma categoria editorial além das seis existentes,
 é necessária uma alteração no gerador; escrever um novo valor em `Category`
 não cria a categoria.
+
+## 11. Cards em Doações, Luthier e Links
+
+As três categorias usam o mesmo sistema de artigos: cada arquivo `.md` em
+`content/` cria um card que abre o texto completo. O nome do arquivo continua
+definindo a URL `/artigos/<nome>/`. Esses textos também aparecem no índice
+Artigos, junto com os das demais categorias.
+
+- **Doações:** use `Category: doacoes`. Crie um arquivo por modalidade,
+  como instrumentos, dinheiro ou materiais. No texto, explique o que é aceito
+  e como contribuir. Inclua os contatos ou dados de pagamento que deseja publicar.
+- **Luthier:** use `Category: luthier`. Crie um arquivo para cada serviço
+  ou instrumento, detalhando atendimento, escopo e contato quando disponíveis.
+- **Links:** use `Category: links`. Escreva seus comentários sobre o aplicativo
+  e inclua o link externo no corpo. O card leva ao artigo, e o artigo leva ao
+  aplicativo. Não existe um campo de cabeçalho especial para o link externo.
+
+Enquanto Doações e Luthier estiverem sem artigos, aparece uma mensagem de
+apresentação. Ela desaparece automaticamente quando o primeiro card é publicado.
+
+### Exemplo de Luthier
+
+Salve como `content/luthier-regulagem-violino.md` e substitua as orientações
+entre colchetes pelos dados reais antes de publicar:
+
+```md
+Title: Regulagem de violino
+Description: Conheça o serviço de regulagem e os detalhes do atendimento.
+Category: luthier
+Image: violin.jpg
+
+## Sobre o serviço
+
+[Descreva o serviço que você oferece e quais instrumentos atende.]
+
+## Atendimento
+
+[Informe a região e o contato para avaliação.]
+```
+
+### Exemplo de Doações
+
+Salve como `content/doacoes-instrumentos.md` e preencha os dados reais:
+
+```md
+Title: Doação de instrumentos
+Description: Saiba como contribuir com instrumentos musicais.
+Category: doacoes
+
+## Quais instrumentos são aceitos
+
+[Informe os instrumentos e as condições em que podem ser recebidos.]
+
+## Como combinar a entrega
+
+[Informe o contato e as orientações de entrega.]
+```
+
+### Exemplo de Links
+
+Os arquivos `content/links-musescore-studio.md`, `content/links-audacity.md`
+e `content/links-friture.md` substituem a antiga lista fixa. Você pode editar
+esses textos para acrescentar seus comentários e imagens. Para um novo app:
+
+```md
+Title: Nome do aplicativo
+Description: Uma frase sobre a finalidade do aplicativo.
+Category: links
+
+## Meus comentários
+
+[Escreva sua experiência e as observações que deseja compartilhar.]
+
+## Acessar o aplicativo
+
+[Visitar o site oficial](https://example.com/)
+```
+
+Substitua `https://example.com/` pelo endereço real antes de publicar.
+O canal Clave Sol Music está no rodapé de todas as páginas; esse link é
+definido no template compartilhado em `build.py`.
