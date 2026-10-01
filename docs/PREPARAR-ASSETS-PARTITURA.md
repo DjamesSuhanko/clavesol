@@ -4,6 +4,53 @@ Este roteiro começa com uma partitura pronta no MuseScore (`.mscz`) e termina
 com a pasta de arquivos usada pelo Clave Sol. Para o player com som gerado e
 cursor, não é necessário criar MP3 ou Ogg.
 
+## Um arquivo original por lição
+
+O método é uma coleção, não o nome obrigatório do arquivo MuseScore.
+Crie e salve **cada lição separadamente**, por exemplo:
+
+```text
+MuseScore4/Scores/domingos-pecci/
+├── clarinete-20p40.mscz
+└── clarinete-21p41.mscz
+```
+
+São exemplos de nomes e caminhos, não arquivos já criados. Você pode usar
+outros nomes nos originais; `score_source` deve apontar para a lição desejada.
+Não use um arquivo existente chamado `DomingosPecci.mscz` como substituto
+para uma lição que você ainda vai escrever.
+
+O catálogo e os arquivos exportados ficam em duas árvores separadas, ambas
+partindo da **raiz do repositório**:
+
+```text
+partituras/metodos/domingos-pecci/
+├── _index.md                 apresentação do método (uma vez)
+├── clarinete-20p40.md         cadastro da lição 20
+└── clarinete-21p41.md         cadastro da lição 21
+
+assets/music/metodos/domingos-pecci/
+├── clarinete-20p40/
+│   ├── score.musicxml
+│   ├── score-1.svg
+│   ├── timing.json
+│   └── score.mscz            cópia opcional da lição 20
+└── clarinete-21p41/
+    ├── score.musicxml
+    ├── score-1.svg
+    ├── timing.json
+    └── score.mscz            cópia opcional da lição 21
+```
+
+`score.mscz` é apenas o nome padronizado da cópia oferecida para download
+pelo site. **Não renomeie seu original para isso.** As cópias podem ter o mesmo
+nome porque cada uma fica em sua própria pasta de lição. O mesmo vale para
+`score.musicxml`, `score-1.svg` e `timing.json`.
+
+Não crie `assets/` dentro de `partituras/metodos/domingos-pecci/`. Isso não
+é o caminho que o gerador procura. Cada Markdown produz uma página
+independente, como `/partituras/metodos/domingos-pecci/clarinete-20p40/`.
+
 ## O que será criado
 
 Para a lição cadastrada em:
@@ -57,17 +104,44 @@ No terminal:
 cd /home/djames/Documents/ClaveSol/site/clavesol
 ```
 
-Defina o arquivo original e a pasta da lição. Para o teste atual, o arquivo já
-está neste caminho:
+Depois de escrever e salvar a lição, defina seu arquivo original e a pasta
+de destino. O caminho abaixo é um exemplo: ajuste para onde você salvou
+**essa lição**. Execute os passos seguintes no mesmo terminal:
 
 ```sh
-score_source="/home/djames/Documents/MuseScore4/Scores/DomingosPecci.mscz"
-asset_dir="assets/music/metodos/domingos-pecci/clarinete-20p40"
+score_source="/home/djames/Documents/MuseScore4/Scores/domingos-pecci/clarinete-20p40.mscz"
+lesson_key="metodos/domingos-pecci/clarinete-20p40"
+asset_dir="assets/music/$lesson_key"
 mkdir -p "$asset_dir"
 ```
 
-O valor de `asset_dir` deve repetir o caminho do Markdown depois de
-`partituras/`, sem a extensão `.md`.
+`lesson_key` repete o caminho do Markdown depois de `partituras/`, sem `.md`.
+Para a próxima lição, mude `score_source` e `lesson_key`; os demais comandos
+continuam iguais. Não reutilize a pasta de saída da lição anterior.
+
+Antes de exportar, confira:
+
+```sh
+test -f "$score_source" && printf 'Arquivo de origem encontrado\n'
+```
+
+Se não aparecer a confirmação, pare e corrija o caminho. Não é necessário
+que o nome original corresponda ao nome do método ou ao nome padronizado
+`score.mscz`.
+
+Os comandos `python` abaixo pressupõem um ambiente virtual ativado com
+as dependências de `requirements.txt`. Neste computador, o Python do sistema
+não tem o comando `python` nem o pacote Markdown; somente trocar para
+`python3` não resolve essa dependência. Para esta sessão, pode usar o ambiente
+já preparado:
+
+```sh
+. /home/djames/Documents/Codex/2026-09-30/s/work/runtime/bin/activate
+python -c 'import markdown; print("Ambiente pronto")'
+```
+
+Esse ambiente pertence à área de trabalho desta sessão. Se ele for removido,
+prepare outro ambiente virtual com `requirements.txt` antes de continuar.
 
 ## 3. Exportar o MusicXML
 
@@ -75,7 +149,7 @@ No Linux deste computador, o executável está em
 `/home/djames/bin/musescore`:
 
 ```sh
-/home/djames/bin/musescore -o "$asset_dir/score.musicxml" "$score_source"
+QT_QPA_PLATFORM=offscreen /home/djames/bin/musescore -o "$asset_dir/score.musicxml" "$score_source"
 ```
 
 Também é possível usar a interface do MuseScore: **Arquivo → Exportar**,
@@ -91,23 +165,24 @@ O comando `--score-media` do MuseScore reúne as páginas SVG e as posições da
 reprodução em um JSON temporário:
 
 ```sh
+media_dir="$(mktemp -d)"
 QT_QPA_PLATFORM=offscreen /home/djames/bin/musescore \
   --score-media "$score_source" \
-  > /tmp/clarinete-20p40-media.json \
-  2> /tmp/clarinete-20p40-musescore.log
+  > "$media_dir/media.json" \
+  2> "$media_dir/musescore.log"
 ```
 
 Confirme que o resultado é um JSON válido:
 
 ```sh
-python -m json.tool /tmp/clarinete-20p40-media.json > /dev/null
+python -m json.tool "$media_dir/media.json" > /dev/null
 ```
 
 Agora converta esse arquivo para o formato do site:
 
 ```sh
 python scripts/score_timing.py \
-  /tmp/clarinete-20p40-media.json \
+  "$media_dir/media.json" \
   "$asset_dir"
 ```
 
@@ -125,7 +200,7 @@ Se estiver atualizando uma lição e os arquivos já existirem, use:
 
 ```sh
 python scripts/score_timing.py \
-  /tmp/clarinete-20p40-media.json \
+  "$media_dir/media.json" \
   "$asset_dir" \
   --force
 ```
@@ -138,7 +213,7 @@ excedentes. Confira a nova quantidade antes de remover as páginas antigas.
 Para oferecer PDF:
 
 ```sh
-/home/djames/bin/musescore -o "$asset_dir/score.pdf" "$score_source"
+QT_QPA_PLATFORM=offscreen /home/djames/bin/musescore -o "$asset_dir/score.pdf" "$score_source"
 ```
 
 Para oferecer também o arquivo editável do MuseScore:
@@ -162,13 +237,17 @@ Description: Orientações e partitura para estudar a lição 20 da página 40.
 Lesson: 20
 Playback: generated
 Cursor: true
-Draft: false
+Draft: true
 
 ## Orientações de estudo
 
 O segundo pentagrama usa os superagudos. Pule-o, se desejar, mas é interessante
 conhecer e praticar esse registro.
 ```
+
+Mantenha `Draft: true` enquanto escreve a lição e prepara os arquivos.
+Quando os assets estiverem completos, mude para `Draft: false` **antes**
+da validação local: rascunhos são ignorados pelo gerador.
 
 `Playback: generated` e `Cursor: true` tornam a intenção explícita. Mesmo sem
 esses campos, o site detecta MusicXML e mapa de cursor automaticamente.
@@ -213,12 +292,14 @@ Veja primeiro o que será enviado:
 git status --short
 ```
 
-Adicione somente o cadastro e a pasta dessa lição:
+Adicione o cadastro e a pasta dessa lição. Na primeira lição do método,
+inclua também seu `_index.md` para publicar o nome e a descrição da coleção:
 
 ```sh
 git add \
-  partituras/metodos/domingos-pecci/clarinete-20p40.md \
-  assets/music/metodos/domingos-pecci/clarinete-20p40/
+  partituras/metodos/domingos-pecci/_index.md \
+  "partituras/$lesson_key.md" \
+  "$asset_dir/"
 git commit -m "Adiciona lição 20 do método Domingos Pecci"
 git push origin main
 ```
@@ -232,8 +313,20 @@ Depois de alterar notas, compassos, transposição, andamento ou diagramação n
 MuseScore, repita as exportações de `score.musicxml`, `--score-media`, SVGs e
 `timing.json`. Todos precisam vir da mesma versão do `.mscz`.
 
-Se o site informar que MusicXML e `timing.json` têm durações diferentes, uma
-das exportações ficou antiga. Refaça os passos 3 e 4.
+Se o site informar que MusicXML e `timing.json` têm durações diferentes,
+confira primeiro se vieram da mesma revisão. **Esse erro também pode ocorrer
+por arredondamento do MuseScore**, mesmo com exportações corretas.
+
+A validação atual aceita diferença de até 0,05 segundo. No teste anterior
+com um arquivo existente, o MusicXML resultou em 151,2 s e o mapa em 151 s;
+esses arquivos seriam rejeitados. A alteração que ampliava a tolerância foi
+revertida, portanto esse impedimento continua presente. Isso não valida nem
+invalida a lição que você ainda vai criar: ela precisa ser testada separadamente.
+
+Reexportar não resolve necessariamente um arredondamento. Não altere o
+andamento nem os tempos manualmente para ocultar o erro; registre os dois
+valores para uma correção funcional específica. Este roteiro não modifica
+o player nem a validação.
 
 ## Quando usar áudio gravado
 

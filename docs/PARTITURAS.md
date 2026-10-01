@@ -29,6 +29,12 @@ assets/music/metodos/domingos-pecci/licao-27/
 
 Use letras minúsculas, números e hífens nos nomes de pastas e arquivos Markdown. Títulos visíveis podem conter espaços, acentos e símbolos musicais. A categoria e a coleção vêm das pastas; não preencha `Category` ou `Collection` no Markdown. O leitor reconhece até dois níveis de agrupamento: categoria e coleção.
 
+O `.mscz` original pode se chamar `clarinete-20p40.mscz`, `licao-27.mscz`
+ou outro nome escolhido por você. Cada lição tem seu próprio original,
+cadastro Markdown e pasta de assets. A cópia opcional para download chama-se
+`score.mscz` **dentro da pasta de cada lição**; isso não exige renomear o original.
+O método corresponde à pasta da coleção e ao seu `_index.md`.
+
 ## Exemplo: Método Domingos Pecci, lição 27
 
 Na raiz do clone:
