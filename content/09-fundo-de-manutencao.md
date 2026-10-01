@@ -4,13 +4,13 @@ Category: doar
 
 ## Apoio à continuidade do projeto
 
-Este espaço apresentará o Fundo de Manutenção, seus objetivos e a destinação
-das contribuições recebidas.
+Gosta do conteúdo do site e quer ajudar a manter? Faça um PIX de qualquer valor para o QR code abaixo. 
+
+Motive a continuidade e deixe uma mensagem bonita no PIX!
+
+![QR Code para doação via Pix]({{BASE}}/assets/pix-dj.webp)
 
 ## Como contribuir
 
-As formas de contribuição e os dados para doação serão divulgados aqui.
+Por enquanto, somente PIX para mim, proprietário do site. 
 
-## Acompanhamento
-
-As informações sobre a utilização dos recursos serão detalhadas nesta página.
