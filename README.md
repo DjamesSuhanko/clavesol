@@ -32,6 +32,13 @@ python scripts/check_links.py
 python -m http.server 8000 --directory dist
 ```
 
+## Importar uma lição do MuseScore
+
+Use `python3 criar_licao.py "/caminho/licao.mscz" --metodo domingos-pecci --commit`.
+O script prepara os arquivos, valida o catálogo e cria o commit; depois basta
+`git push origin main`. Veja o [guia do importador](docs/IMPORTAR-LICAO.md),
+incluindo atualização de lições e instalação.
+
 ## Partituras migradas
 
 A coleção musical do modelo Manual do Maker foi copiada integralmente, incluindo a partitura 107 — MSA — Bb, de P. Bona, seu SVG, MusicXML, MP3, Ogg e mapa de 172 posições. O endereço `/musica/msa/107-msa-bb/` foi preservado. A origem foi mantida intacta para evitar interromper links existentes.

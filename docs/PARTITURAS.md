@@ -1,5 +1,8 @@
 # Publicar partituras
 
+Para gerar o cadastro e os assets a partir de um `.mscz`, use o
+[importador automático de lições](IMPORTAR-LICAO.md).
+
 Categorias e coleções são pastas. Cada lição é um Markdown. Não é necessário alterar Python para adicionar partituras.
 
 Para o processo completo, começando no arquivo `.mscz`, siga o

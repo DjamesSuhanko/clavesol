@@ -1,5 +1,10 @@
 # Preparar os arquivos de uma partitura
 
+**Caminho recomendado:** use o [importador automático](IMPORTAR-LICAO.md).
+Ele recebe seu `.mscz` e prepara a lição. Os passos abaixo são a alternativa
+manual. A limitação de arredondamento descrita ao final se aplica à exportação
+manual; o importador normaliza esse caso antes da validação.
+
 Este roteiro começa com uma partitura pronta no MuseScore (`.mscz`) e termina
 com a pasta de arquivos usada pelo Clave Sol. Para o player com som gerado e
 cursor, não é necessário criar MP3 ou Ogg.
