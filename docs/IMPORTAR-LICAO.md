@@ -165,16 +165,30 @@ de nomes ambíguos como `20p40`.
 
 ## Duração e erros de validação
 
-O importador normaliza o arredondamento da duração do MuseScore quando a
-diferença para o MusicXML é de até meio segundo: usa a duração precisa do
-MusicXML e mantém intactos os tempos e as coordenadas de cada posição.
-Também verifica se todas as posições cabem nessa duração. Isso trata o caso
-151 s / 151,2 s sem modificar o player ou sua validação.
+O importador confere cada posição do cursor com os inícios de notas e pausas
+do MusicXML, usando o mesmo relógio que gera o som. Ele exige correspondência
+na quantidade e ordem das posições e na distribuição por compasso. Se essa
+correspondência falhar, interrompe a importação em vez de tentar adivinhar.
 
-Diferenças maiores interrompem a importação. Confira a partitura e o andamento.
-`--tempo` permite informar semínimas por minuto quando necessário, mas o mapa
-exportado também precisa corresponder a esse andamento; prefira configurar
-uma marca de metrônomo no MuseScore.
+Os tempos de cada posição e a duração final vêm do MusicXML; as coordenadas
+e páginas continuam vindo do MuseScore. **Não há multiplicação dos tempos
+pela razão entre durações totais.** Uma fermata final ou uma cauda de reprodução
+pode aumentar a duração informada pelo MuseScore sem alterar os inícios das
+notas anteriores. Comprimir a lição inteira nesse caso causaria desvio crescente.
+
+O som gerado mantém as durações escritas: não acrescenta prolongamento
+expressivo de fermatas. O cursor segue essa mesma interpretação. Para preservar
+as fermatas e a interpretação sonora do MuseScore, use o fluxo manual com
+áudio gravado. `--tempo` altera o andamento do estudo e de seu cursor juntos.
+
+Lições importadas anteriormente com ajuste proporcional precisam ser
+reimportadas com `--atualizar`; mudar apenas o script não corrige mapas já
+gerados. Exemplo:
+
+```sh
+python3 criar_licao.py "/caminho/MSA - 109.mscz" \
+  --msa --slug msa-109 --licao 109 --atualizar
+```
 
 Se outra lição incompleta bloquear o catálogo, finalize-a ou marque seu
 Markdown como `Draft: true`. O script não desativa nem altera outras lições

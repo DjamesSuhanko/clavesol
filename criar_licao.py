@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Prepara uma lição independente para o Clave Sol a partir de um .mscz."""
 import argparse
+import base64
+import binascii
+from bisect import bisect_right
 import importlib.util
 import copy
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -24,6 +28,46 @@ def slugify(value):
 
 def one_line(value):
     return ' '.join(str(value).split())
+
+
+def synchronize_media(media, sequence):
+    """Use the same notated clock for cursor and sound, after structural matching."""
+    reported = float(media['metadata']['duration'])
+    duration = sequence['duration']
+    if not all(math.isfinite(value) and value > 0 for value in (reported, duration)):
+        raise ValueError('MuseScore e MusicXML devem informar durações finitas e positivas.')
+    normalized = copy.deepcopy(media)
+    trees, events, times = {}, {}, {}
+    try:
+        for field in ('mposXML', 'sposXML'):
+            tree = ET.fromstring(base64.b64decode(media[field], validate=True))
+            trees[field] = tree
+            events[field] = tree.findall('events/event')
+            times[field] = [float(e.attrib['position']) / 1000 for e in events[field]]
+            if not times[field] or any(not math.isfinite(t) or t < 0 for t in times[field]) or times[field] != sorted(times[field]):
+                raise ValueError('eventos ausentes, inválidos ou fora de ordem')
+        measures = sequence['measureStarts']
+        segments = sequence['cursorEvents']
+        if len(events['mposXML']) != len(measures) or len(events['sposXML']) != len(segments):
+            raise ValueError('quantidade de compassos ou posições diferente entre MuseScore e MusicXML')
+        if [m['measure'] for m in measures] != list(range(1, len(measures) + 1)):
+            raise ValueError('partes com compassos desalinhados não são suportadas')
+        measure_elements = {e.attrib['id'] for e in trees['mposXML'].findall('elements/element')}
+        for index, event in enumerate(events['mposXML']):
+            if event.attrib['elid'] != str(index) or event.attrib['elid'] not in measure_elements:
+                raise ValueError('ordem de compassos incompatível com reprodução linear')
+        for time, segment in zip(times['sposXML'], segments):
+            if bisect_right(times['mposXML'], time) != segment['measure']:
+                raise ValueError('posição associada a um compasso diferente no MusicXML')
+        max_difference = max(abs(old - event['time']) for old, event in zip(times['sposXML'], segments))
+        for field, expected in [('mposXML', measures), ('sposXML', segments)]:
+            for event, position in zip(events[field], expected):
+                event.set('position', f"{position['time'] * 1000:.3f}")
+            normalized[field] = base64.b64encode(ET.tostring(trees[field], encoding='utf-8')).decode('ascii')
+    except (binascii.Error, ET.ParseError, ValueError, KeyError, TypeError) as error:
+        raise ValueError(f'Não foi possível sincronizar o cursor: {error}. Nenhum ajuste proporcional foi aplicado.') from error
+    normalized['metadata']['duration'] = duration
+    return normalized, reported, max_difference
 
 
 def prepare(source, method=None, *, msa=False, hinos=False, root=ROOT, slug=None, title=None, lesson=None,
@@ -97,16 +141,10 @@ def prepare(source, method=None, *, msa=False, hinos=False, root=ROOT, slug=None
 
         print('Exportando MusicXML…', flush=True)
         export(['-o', str(output / 'score.musicxml')])
-        sequence = parse_musicxml(output / 'score.musicxml', tempo)
+        sequence = parse_musicxml(output / 'score.musicxml', tempo, include_cursor=True)
         print('Exportando páginas e cursor…', flush=True)
         media = json.loads(export(['--score-media']))
-        # MuseScore rounds only metadata.duration. Use precise MusicXML duration
-        # if rounding explains the difference, and verify all position timestamps.
-        reported = float(media['metadata']['duration'])
-        if abs(reported - sequence['duration']) > .500001:
-            raise ValueError(f'Durações incompatíveis: MuseScore {reported:g}s; MusicXML {sequence["duration"]:g}s. Confira andamento e repetições.')
-        normalized = copy.deepcopy(media)
-        normalized['metadata']['duration'] = sequence['duration']
+        normalized, reported, cursor_difference = synchronize_media(media, sequence)
         svgs, timing = convert_media(normalized)
         validate_timing(timing, len(svgs))
         for i, svg in enumerate(svgs, 1):
@@ -182,8 +220,11 @@ def prepare(source, method=None, *, msa=False, hinos=False, root=ROOT, slug=None
         for path, heading in indices:
             if not path.exists(): path.write_text(f'Title: {one_line(heading)}\n', encoding='utf-8')
         print(f'Pronto: {key}\n{len(svgs)} página(s), {sequence["duration"]:g}s, {sequence["marking"]}')
+        print(f"Cursor conferido: {len(sequence['cursorEvents'])} posições no mesmo relógio das notas; "
+              f"diferença máxima da exportação original: {cursor_difference:.6f}s.")
         if abs(reported - sequence['duration']) > .05:
-            print(f'Duração arredondada do MuseScore normalizada: {reported:g}s → {sequence["duration"]:g}s; posições preservadas.')
+            print(f"Duração final do estudo: {sequence['duration']:g}s (MuseScore: {reported:g}s). "
+                  'Sem comprimir ou esticar os tempos da lição.')
         return key
 
 

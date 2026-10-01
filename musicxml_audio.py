@@ -50,7 +50,7 @@ def tempo_marking(direction):
     return bpm, f'{symbols.get(unit, unit)}{"." * dots} = {per_minute}'
 
 
-def parse_musicxml(path: Path, tempo_override=None):
+def parse_musicxml(path: Path, tempo_override=None, *, include_cursor=False):
     """Return notes timed in seconds. Raises on data that would play misleadingly."""
     root = ET.parse(path).getroot()
     if local(root) != 'score-partwise':
@@ -66,10 +66,12 @@ def parse_musicxml(path: Path, tempo_override=None):
             raise ValueError('MusicXML: saltos exigem Playback: recorded')
     raw_notes, tempos, markings = [], {}, {}
     score_end = 0.0
+    segments, measure_starts = {}, {}
     for part_index, part in enumerate(parts):
         divisions, transpose, base = 1.0, 0, 0.0
         open_ties = {}
-        for measure in (item for item in part if local(item) == 'measure'):
+        for measure_number, measure in enumerate((item for item in part if local(item) == 'measure'), 1):
+            measure_starts[(measure_number, round(base, 9))] = base
             cursor = maximum = last_onset = 0.0
             for item in measure:
                 tag = local(item)
@@ -114,6 +116,7 @@ def parse_musicxml(path: Path, tempo_override=None):
                         cursor += duration
                         maximum = max(maximum, cursor)
                     maximum = max(maximum, onset + duration)
+                    segments[(measure_number, round(base + onset, 9))] = base + onset
                     pitch = child(item, 'pitch')
                     if pitch is None:
                         continue
@@ -170,5 +173,11 @@ def parse_musicxml(path: Path, tempo_override=None):
     duration = round(max(seconds(score_end), max(n['time'] + n['duration'] for n in notes)), 6)
     initial = changes[0][1]
     marking = f'♩ = {initial:g}' if tempo_override is not None else markings.get(0.0, f'♩ = {initial:g}')
-    return {'version': 1, 'duration': duration, 'quarterBpm': initial,
-            'marking': marking, 'notes': notes}
+    result = {'version': 1, 'duration': duration, 'quarterBpm': initial,
+              'marking': marking, 'notes': notes}
+    if include_cursor:
+        result['cursorEvents'] = [dict(measure=key[0], time=round(seconds(quarter), 6))
+                                  for key, quarter in sorted(segments.items())]
+        result['measureStarts'] = [dict(measure=key[0], time=round(seconds(quarter), 6))
+                                   for key, quarter in sorted(measure_starts.items())]
+    return result

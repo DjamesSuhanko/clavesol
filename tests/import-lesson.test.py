@@ -9,7 +9,7 @@ from unittest.mock import patch
 from types import SimpleNamespace
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-from criar_licao import prepare, commit_lesson, lesson_paths, main
+from criar_licao import prepare, commit_lesson, lesson_paths, main, synchronize_media
 import subprocess
 from score_catalog import load_catalog
 
@@ -115,8 +115,8 @@ class ImportTests(unittest.TestCase):
         self.assertEqual((a/'foto.txt').read_text(),'keep')
 
     def test_export_failure_and_bad_duration_do_not_install(self):
-        self.media['metadata']['duration']=4
-        with self.assertRaisesRegex(ValueError,'incompatíveis'):
+        self.media['sposXML']=base64.b64encode(b'<score><elements/><events/></score>').decode()
+        with self.assertRaisesRegex(ValueError,'sincronizar'):
             self.run_import()
         self.assertEqual(list(self.root.iterdir()),[])
         self.mock.side_effect=OSError('export failed')
@@ -130,6 +130,38 @@ class ImportTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'incomplete'):
             self.run_import()
         self.assertFalse((self.root/'assets').exists())
+
+class SynchronizationTests(unittest.TestCase):
+    def media(self, times, starts, duration):
+        def xml(values):
+            elements=''.join(f'<element id="{i}" page="0" x="{i}" y="0" sx="1" sy="1"/>' for i in range(len(values)))
+            events=''.join(f'<event elid="{i}" position="{t*1000}"/>' for i,t in enumerate(values))
+            return base64.b64encode(f'<score><elements>{elements}</elements><events>{events}</events></score>'.encode()).decode()
+        return dict(metadata={'duration':duration},sposXML=xml(times),mposXML=xml(starts))
+
+    def times(self, media):
+        import xml.etree.ElementTree as ET
+        return [float(e.get('position'))/1000 for e in ET.fromstring(base64.b64decode(media['sposXML'])).findall('events/event')]
+
+    def test_final_fermata_does_not_rescale_already_correct_positions(self):
+        times=[0, 60, 120, 180]
+        media=self.media(times,[0],184)
+        sequence=dict(duration=182.222222, cursorEvents=[dict(time=t,measure=1) for t in times],measureStarts=[dict(time=0,measure=1)])
+        corrected,reported,difference=synchronize_media(media,sequence)
+        self.assertEqual(self.times(corrected),times)
+        self.assertEqual(difference,0)
+        self.assertEqual(corrected['metadata']['duration'],182.222222)
+        self.assertEqual(media['metadata']['duration'],184)
+
+    def test_local_hold_is_mapped_by_position_not_global_ratio(self):
+        media=self.media([0,1,4,5],[0,4],6)
+        expected=[0,1,2,3]
+        sequence=dict(duration=4,cursorEvents=[dict(time=t,measure=1 if t<2 else 2) for t in expected],measureStarts=[dict(time=0,measure=1),dict(time=2,measure=2)])
+        corrected,_,_=synchronize_media(media,sequence)
+        self.assertEqual(self.times(corrected),expected)
+        sequence['cursorEvents'][1]['measure']=2
+        with self.assertRaisesRegex(ValueError,'compasso diferente'):
+            synchronize_media(media,sequence)
 
 class CliTests(unittest.TestCase):
     def test_msa_does_not_prompt_and_reports_msa_paths(self):
