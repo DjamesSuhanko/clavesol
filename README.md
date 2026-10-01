@@ -40,6 +40,9 @@ A coleção musical do modelo Manual do Maker foi copiada integralmente, incluin
 
 Veja [como cadastrar categorias, métodos e lições](docs/PARTITURAS.md). O modelo de Domingos Pecci está em `templates/partituras/domingos-pecci/`, fora do catálogo publicado.
 
+Para sair de uma partitura pronta no MuseScore e criar `score.musicxml`, os
+SVGs e o cursor, use o [roteiro de preparação dos assets](docs/PREPARAR-ASSETS-PARTITURA.md).
+
 Os quatro textos iniciais em Markdown foram preparados para esta primeira versão; não são artigos migrados do acervo. A seção Luthier aguarda os dados reais dos serviços e contato.
 
 ## Domínio clavesol.com.br

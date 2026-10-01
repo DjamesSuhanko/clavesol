@@ -215,7 +215,8 @@ def load_catalog(root):
                     raise ValueError('Cursor exige player, SVGs e timing.json')
                 timing_data = json.loads((folder / 'timing.json').read_text())
                 count = validate_timing(timing_data, len(pages))
-                if sequence and abs(timing_data['duration'] - sequence['duration']) > .05:
+                # MuseScore reports score-media duration rounded to whole seconds.
+                if sequence and abs(timing_data['duration'] - sequence['duration']) > .51:
                     raise ValueError('MusicXML e timing.json têm durações diferentes; exporte ambos da mesma revisão')
             measures = positive_int(meta['measures'], 'Measures') if 'measures' in meta else count
             if measures < count:

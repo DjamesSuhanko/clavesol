@@ -77,7 +77,10 @@ class CatalogTests(unittest.TestCase):
         self.assertIn('data-sequence="/clavesol/assets/', body)
         self.assertIn('Mudo para solfejo', body)
         self.assertNotIn('<audio', body)
-        timing = dict(duration=2, events=[dict(time=0, page=1, measure=1, x=1, y=1, width=2, height=2)])
+        timing = dict(duration=1.4, events=[dict(time=0, page=1, measure=1, x=1, y=1, width=2, height=2)])
+        self.write('assets/music/metodos/pecci/licao-27/timing.json', json.dumps(timing))
+        self.assertTrue(load_catalog(self.root).scores[0].timing)
+        timing['duration'] = 2
         self.write('assets/music/metodos/pecci/licao-27/timing.json', json.dumps(timing))
         with self.assertRaisesRegex(ValueError, 'durações diferentes'):
             load_catalog(self.root)

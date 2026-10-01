@@ -2,6 +2,9 @@
 
 Categorias e coleções são pastas. Cada lição é um Markdown. Não é necessário alterar Python para adicionar partituras.
 
+Para o processo completo, começando no arquivo `.mscz`, siga o
+[roteiro para preparar os arquivos da partitura](PREPARAR-ASSETS-PARTITURA.md).
+
 ```text
 partituras/
 ├── msa/
@@ -114,7 +117,9 @@ Para usar uma gravação, informe `Playback: recorded` e exporte `score.mp3` e/o
 Para gerar o cursor, exporte o JSON de mídia com `--score-media` no MuseScore e passe o JSON puro (sem mensagens de inicialização) ao conversor:
 
 ```sh
-python scripts/score_timing.py /caminho/media.json assets/music/metodos/domingos-pecci/licao-27
+/home/djames/bin/musescore --score-media /caminho/partitura.mscz \
+  > /tmp/media.json 2> /tmp/musescore.log
+python scripts/score_timing.py /tmp/media.json assets/music/metodos/domingos-pecci/licao-27
 ```
 
 Esse comando extrai **todos os SVGs do próprio JSON** e gera `timing.json`, mantendo páginas e coordenadas da mesma exportação. Se já houver SVGs ou timing, confira os arquivos e use `--force` para substituí-los. Exporte o MusicXML (ou o áudio gravado, conforme o modo) e os downloads separadamente, sempre da mesma revisão. No modo gerado, a duração do mapa deve coincidir com a sequência; ao alterar o andamento ou a partitura, reexporte também o mapa. Não renumere ou recorte os SVGs depois de gerar o mapa.
