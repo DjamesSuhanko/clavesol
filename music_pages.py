@@ -82,6 +82,9 @@ def build_music(out, base, page, catalog):
         up = 'partituras/' + parent if parent else 'partituras'
         label = catalog.groups[parent].title if parent else 'Partituras'
         children = [g for k, g in catalog.groups.items() if k.startswith(key + '/') and k.count('/') == key.count('/') + 1]
+        if key == 'hinos':
+            order = {'hinos/bb': 0, 'hinos/eb': 1, 'hinos/do': 2, 'hinos/outros': 3}
+            children.sort(key=lambda group: order.get(group.key, 4))
         scores = [s for s in catalog.scores if s.parent == key]
         content = f'<div class="cards score-categories">{"".join(group_card(g) for g in children)}</div>' if children else ''
         content += f'<div class="score-list">{"".join(score_card(s, base, catalog) for s in scores)}</div>'

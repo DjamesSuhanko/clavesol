@@ -71,7 +71,7 @@ def synchronize_media(media, sequence):
 
 
 def prepare(source, method=None, *, msa=False, hinos=False, root=ROOT, slug=None, title=None, lesson=None,
-            method_title=None, executable=None, update=False, pdf=False, tempo=None):
+            method_title=None, executable=None, update=False, pdf=False, tempo=None, hinario=None):
     from score_catalog import load_catalog, safe_key, validate_timing, read_markdown
     from musicxml_audio import parse_musicxml
     from scripts.score_timing import convert_media
@@ -82,7 +82,9 @@ def prepare(source, method=None, *, msa=False, hinos=False, root=ROOT, slug=None
         raise ValueError('Informe o caminho de um arquivo .mscz existente, contendo somente esta lição.')
     if sum((bool(method), msa, hinos)) > 1:
         raise ValueError('Escolha --metodo, --msa ou --hinos; não ambos nem múltiplos destinos.')
-    category = 'hinos' if hinos else 'msa' if msa else None
+    if hinario and (not hinos or hinario not in ('bb', 'do', 'eb', 'outros')):
+        raise ValueError('--hinario exige --hinos e deve ser bb, do, eb ou outros.')
+    category = f'hinos/{hinario}' if hinos and hinario else 'hinos' if hinos else 'msa' if msa else None
     if category and method_title:
         raise ValueError('--nome-metodo só pode ser usado com métodos.')
     if not category:
@@ -217,6 +219,9 @@ def prepare(source, method=None, *, msa=False, hinos=False, root=ROOT, slug=None
         indices = [(md.parent/'_index.md', 'Hinos' if hinos else 'MSA')] if category else [
             (root/'partituras/metodos/_index.md', 'Métodos'),
             (md.parent/'_index.md', method_title or method.replace('-', ' ').title())]
+        if hinos and hinario:
+            indices = [(root/'partituras/hinos/_index.md', 'Hinos'),
+                       (md.parent/'_index.md', {'bb':'Bb', 'do':'C', 'eb':'Eb', 'outros':'Outros'}[hinario])]
         for path, heading in indices:
             if not path.exists(): path.write_text(f'Title: {one_line(heading)}\n', encoding='utf-8')
         print(f'Pronto: {key}\n{len(svgs)} página(s), {sequence["duration"]:g}s, {sequence["marking"]}')
@@ -233,6 +238,8 @@ def lesson_paths(root, key):
     meta, _ = read_markdown(Path(root) / 'partituras' / f'{key}.md')
     paths = [f'partituras/{key}.md', 'assets/' + meta.get('assets', f'music/{key}')]
     parent = key.rsplit('/', 1)[0]
+    if key.startswith('hinos/') and len(key.split('/')) == 3:
+        paths.append('partituras/hinos/_index.md')
     if key.startswith('metodos/'):
         paths.append('partituras/metodos/_index.md')
     paths.append(f'partituras/{parent}/_index.md')
@@ -259,6 +266,7 @@ def main():
     destination.add_argument('--metodo', help='Pasta do método, por exemplo domingos-pecci')
     destination.add_argument('--msa', action='store_true', help='Importa diretamente na categoria MSA')
     destination.add_argument('--hinos', action='store_true', help='Importa diretamente na categoria Hinos')
+    parser.add_argument('--hinario', choices=['bb','do','eb','outros'], help='Coleção de hinos: Bb, C (do), Eb ou Outros; exige --hinos')
     parser.add_argument('--slug', help='Nome da lição no site; padrão: nome do .mscz normalizado')
     parser.add_argument('--titulo', help='Título da lição')
     parser.add_argument('--nome-metodo', help='Título de uma coleção nova')
@@ -302,7 +310,7 @@ def main():
     try:
         key = prepare(args.arquivo, method, msa=args.msa, hinos=args.hinos, slug=args.slug, title=args.titulo,
                       method_title=args.nome_metodo, lesson=args.licao, executable=args.musescore,
-                      update=args.atualizar, pdf=args.pdf, tempo=args.tempo)
+                      update=args.atualizar, pdf=args.pdf, tempo=args.tempo, hinario=args.hinario)
     except ImportError:
         parser.exit(1, 'Ative o ambiente do projeto: source .venv/bin/activate\nDepois: pip install -r requirements.txt\n')
     except (ValueError, OSError, KeyError, ET.ParseError) as error:

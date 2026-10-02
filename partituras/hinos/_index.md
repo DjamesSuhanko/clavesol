@@ -1,2 +1,2 @@
 Title: Hinos
-Description: Hinos com cifras - Bb: Afine o violão 1 tom abaixo do normal.
+Description: Escolha o hinário para instrumentos em Bb, Eb ou C, ou consulte as outras partituras.

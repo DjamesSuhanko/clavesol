@@ -47,6 +47,15 @@ for key,(name,subtitle,desc) in cats.items():
  if key=='tutoriais':extra+='<div class="video-panel"><span class="video-symbol" aria-hidden="true">▷</span><div><p class="eyebrow">PARA VER E PRATICAR</p><h2>MuseScore em vídeo</h2><p>Tutoriais oficiais para começar a escrever partituras e explorar o programa. Conteúdo em inglês.</p><a class="button" href="https://musescore.org/en/tutorials">Assistir aos tutoriais oficiais</a></div></div>'
  save(key,name,f'<section class="category-page"><p class="eyebrow">CLAVE SOL / {name.upper()}</p><h1>{subtitle}<span>.</span></h1><p class="lead">{desc}</p><div class="cards">{"".join(card(a) for a in matches)}</div>{extra}</section>')
 build_music(OUT,BASE,page,catalog)
+page_aliases = json.loads((ROOT/'page_aliases.json').read_text())
+for old, new in page_aliases.items():
+ target = OUT/old/'index.html'
+ source = OUT/new/'index.html'
+ if target.exists() or not source.is_file():
+  raise ValueError(f'Alias de página inválido: {old} -> {new}')
+ target.parent.mkdir(parents=True,exist_ok=True)
+ target.write_text(source.read_text())
+
 (OUT/'404.html').write_text(page('Página não encontrada',f'<section class="category-page"><p class="eyebrow">PAUSA NA LEITURA · 404</p><h1>Esta página não está na estante.</h1><a class="button" href="{BASE}/">Voltar ao início</a></section>'))
 (OUT/'.nojekyll').touch();print(f'{len(list(OUT.rglob("*.html")))} páginas geradas em {OUT}')
 
@@ -55,6 +64,7 @@ seo_metadata.update({key: {'description': values[2]} for key, values in cats.ite
 seo_metadata.update({'partituras/' + key: {'description': group.description} for key, group in catalog.groups.items()})
 seo_metadata.update({score.route: {'description': score.description} for score in catalog.scores})
 seo_aliases = {'musica': 'partituras', 'musica/msa': 'partituras/msa'}
+seo_aliases.update(page_aliases)
 seo_aliases.update({score.legacy: score.route for score in catalog.scores if score.legacy})
 finish_seo(OUT, BASE, json.loads((ROOT/'seo.json').read_text()), seo_metadata, seo_aliases)
 finish_build(OUT, BASE)

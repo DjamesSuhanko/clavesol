@@ -1,0 +1,47 @@
+"""The batch must never publish a failed score or request PDF export."""
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from types import SimpleNamespace
+from unittest.mock import patch
+import sys
+import unittest
+import zipfile
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+from scripts.importar_hinarios import export_one
+
+class BatchTests(unittest.TestCase):
+    def test_success_resume_and_changed_source_rejected(self):
+        with TemporaryDirectory() as directory:
+            root=Path(directory);source=root/'hino-1.mscz';stage=root/'stage'
+            def write_source(title):
+                with zipfile.ZipFile(source,'w') as archive:
+                    archive.writestr('score.mscx',f'<museScore><Score><VBox><Text><style>title</style><text>{title}</text></Text></VBox></Score></museScore>')
+            write_source('Título')
+            job=(source,'bb',stage,'musescore',False)
+            def prepare(*args,**kwargs):
+                self.assertFalse(kwargs['pdf'])
+                self.assertEqual(kwargs['title'],'Hino 1 — Título')
+                project=kwargs['root'];key='hinos/bb/hino-1'
+                assets=project/'assets/music'/key;assets.mkdir(parents=True)
+                for name in ['score-1.svg','score.musicxml','score.mscz','timing.json']:(assets/name).write_text('fixture')
+                md=project/'partituras'/f'{key}.md';md.parent.mkdir(parents=True)
+                md.write_text('Title: Hino 1\nPlayback: generated\nCursor: true\n')
+            with patch('scripts.importar_hinarios.prepare',side_effect=prepare) as operation,patch('scripts.importar_hinarios.load_catalog',return_value=SimpleNamespace(scores=[SimpleNamespace(playback='generated',timing=True)])):
+                result=export_one(job)
+                self.assertEqual(result['status'],'pronto')
+                self.assertNotIn('score.pdf',result['files'])
+                self.assertEqual(export_one(job),result)
+                self.assertEqual(operation.call_count,1)
+            write_source('Alterado')
+            with patch('scripts.importar_hinarios.prepare',side_effect=ValueError('cursor incompatível')) as operation:
+                result=export_one(job)
+                self.assertEqual(result['status'],'excluido')
+                self.assertEqual(result['reason'],'cursor incompatível')
+                self.assertFalse((stage/'partituras/hinos/bb/hino-1.md').exists())
+                self.assertFalse((stage/'assets/music/hinos/bb/hino-1').exists())
+                export_one(job)
+                self.assertEqual(operation.call_count,1)
+                export_one((*job[:-1],True))
+                self.assertEqual(operation.call_count,2)
+
+if __name__=='__main__':unittest.main()

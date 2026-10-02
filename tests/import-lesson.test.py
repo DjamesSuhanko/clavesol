@@ -47,6 +47,20 @@ class ImportTests(unittest.TestCase):
             self.assertEqual((a/'score.mscz').read_bytes(),b'original')
         self.assertEqual(self.source.read_bytes(),b'original')
 
+    def test_hymn_collections_keep_same_filename_independent(self):
+        for collection in ('bb', 'eb', 'do', 'outros'):
+            key = prepare(self.source, hinos=True, hinario=collection, root=self.root,
+                          executable='musescore', slug='hino-1', lesson=1)
+            self.assertEqual(key, f'hinos/{collection}/hino-1')
+            self.assertIn('partituras/hinos/_index.md', lesson_paths(self.root, key))
+            self.assertIn(f'partituras/hinos/{collection}/_index.md', lesson_paths(self.root, key))
+        self.assertEqual(len(load_catalog(self.root).scores), 4)
+        self.assertEqual((self.root/'partituras/hinos/do/_index.md').read_text(), 'Title: C\n')
+        with self.assertRaises(ValueError):
+            prepare(self.source, msa=True, hinario='bb', root=self.root)
+        with self.assertRaises(ValueError):
+            prepare(self.source, hinos=True, hinario='../bb', root=self.root)
+
     def test_msa_assets_index_and_independent_method(self):
         key = prepare(self.source, msa=True, root=self.root, slug='licao-20', lesson=20, pdf=True, executable='musescore')
         self.assertEqual(key, 'msa/licao-20')

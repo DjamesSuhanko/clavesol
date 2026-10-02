@@ -14,11 +14,11 @@ python3 criar_licao.py "/caminho/completo/108-msa-bb.mscz" \
   --msa --licao 108 --commit
 ```
 
-Para **hinos**, use `--hinos`:
+Para **hinos**, use `--hinos` e escolha o hinário com `--hinario`:
 
 ```sh
 python3 criar_licao.py "/caminho/completo/hino-1.mscz" \
-  --hinos --licao 1 --pdf --commit
+  --hinos --hinario bb --licao 1 --pdf --commit
 ```
 
 `--metodo NOME`, `--msa` e `--hinos` são alternativas: use apenas uma.
@@ -194,3 +194,61 @@ Se outra lição incompleta bloquear o catálogo, finalize-a ou marque seu
 Markdown como `Draft: true`. O script não desativa nem altera outras lições
 para fazer a validação passar. Em caso de falha de exportação ou validação,
 os arquivos existentes da lição permanecem intactos.
+
+## Hinários por altura: Bb, Eb e C
+
+A página Partituras → Hinos mostra os cards Bb, Eb, C e Outros.
+Use `--hinario bb`, `--hinario eb`, `--hinario do` ou `--hinario outros`
+junto de `--hinos`. O diretório `do` aparece no site como **C**.
+
+```sh
+python criar_licao.py "$HOME/Documents/ClaveSol/lab/Musescore4/bb/hino-1.mscz" --hinos --hinario bb --licao 1 --pdf
+python criar_licao.py "$HOME/Documents/ClaveSol/lab/Musescore4/eb/hino-1.mscz" --hinos --hinario eb --licao 1 --pdf
+python criar_licao.py "$HOME/Documents/ClaveSol/lab/Musescore4/do/hino-1.mscz" --hinos --hinario do --licao 1 --pdf
+```
+
+Nomes iguais são independentes: cada um ocupa
+`partituras/hinos/<hinario>/hino-1.md` e
+`assets/music/hinos/<hinario>/hino-1/`. Não há transposição automática:
+o importador respeita a escrita e a configuração de instrumento do original.
+`--hinos` sem `--hinario` mantém o comportamento antigo (diretamente em Hinos);
+para conservar a organização nova, sempre informe o hinário.
+
+As seis partituras anteriormente na raiz de Hinos estão em Outros. Seus
+endereços antigos continuam acessíveis por `page_aliases.json`, com URL
+canônica apontando para a página nova. A configuração não altera os originais
+no diretório de trabalho do MuseScore.
+
+### Importação em lote (somente partituras funcionais)
+
+Na raiz do projeto, execute:
+
+```sh
+.venv/bin/python scripts/importar_hinarios.py
+```
+
+O script usa, por padrão, os originais em
+`~/Documents/ClaveSol/lab/Musescore4/{bb,eb,do}` e prepara os resultados em
+`~/Documents/ClaveSol/lab/hinarios-para-publicar/`.
+
+Ele executa o mesmo `prepare()` usado pelo importador individual:
+MusicXML, SVGs, cursor e cópia do MSCZ. **Não gera PDF, não converte para
+WebP e não publica partituras sem player.** Somente hinos com som e cursor
+validados entram no resultado. Os incompatíveis são listados em
+`relatorio-excluidos.csv`, com o arquivo original e o motivo, para correção.
+
+A execução acontece inteiramente no computador, sem chamadas a IA e sem
+consumir o plano do Codex. Usa quatro processos; `--workers 8` permite mais
+paralelismo em computadores com memória suficiente. Cada MuseScore pode
+consumir bastante memória durante a exportação.
+
+Pode interromper com Ctrl+C e repetir o comando. Arquivos concluídos e
+inalterados são reaproveitados. Originais corrigidos são detectados pelo hash;
+use `--tentar-excluidos` para tentar também os erros cujo arquivo não mudou.
+`--source`, `--stage` e `--musescore` permitem personalizar os caminhos.
+
+Ao terminar, o script grava `CONCLUIDO.json`, `relatorio.json` e o relatório
+de exclusões na pasta de resultados. Ele **não modifica o catálogo do site,
+não faz commit e não faz push**. Avise que terminou para continuarmos com a
+revisão, instalação dos arquivos funcionais e publicação. Os originais
+permanecem intactos.
