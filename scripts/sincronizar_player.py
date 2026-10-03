@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 NAMES = ('clavesol', 'clavesol-hinos-bb', 'clavesol-hinos-eb', 'clavesol-hinos-do')
 SHARED = ('assets/music.js', 'assets/music-synth.mjs', 'assets/music-timing.mjs',
           'assets/style.css', 'music_pages.py', 'tests/music-player.test.mjs',
-          'tests/music-synth.test.mjs')
+          'tests/music-synth.test.mjs', 'musicxml_audio.py', 'tests/fermatas.test.py')
 SOURCE_ONLY = ('scripts/sincronizar_player.py', 'docs/SINCRONIZAR-PLAYER.md',
                'tests/sync-player.test.py')
 
@@ -81,6 +81,7 @@ def main():
         print(f'Validando {repo.name}…', flush=True)
         for test in ('music.test.mjs', 'music-player.test.mjs', 'music-synth.test.mjs'):
             run([node, 'tests/'+test], repo)
+        run([sys.executable, 'tests/fermatas.test.py'], repo)
         env = os.environ.copy()
         # Explicit local root build, independent of shell/domain configuration.
         env['BASE_PATH'] = ''
