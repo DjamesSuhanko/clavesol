@@ -43,6 +43,7 @@ jobs:
       - run: python scripts/check_links.py
         env:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
+      - run: python tests/external-hymns.test.py
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

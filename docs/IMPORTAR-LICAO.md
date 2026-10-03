@@ -252,3 +252,12 @@ de exclusões na pasta de resultados. Ele **não modifica o catálogo do site,
 não faz commit e não faz push**. Avise que terminou para continuarmos com a
 revisão, instalação dos arquivos funcionais e publicação. Os originais
 permanecem intactos.
+
+
+## Hinários em repositórios separados
+
+Os hinários Bb, Eb e C ficam, respectivamente, nos repositórios `clavesol-hinos-bb`, `clavesol-hinos-eb` e `clavesol-hinos-do`, ao lado deste projeto. Execute `criar_licao.py --hinos --hinario bb|eb|do` dentro do repositório correspondente (usando apenas uma dessas opções), com o caminho completo do MSCZ. Faça commit e push nesse repositório. O hinário Outros continua no blog principal.
+
+O arquivo `external_hymns.json` do blog guarda os endereços e os nomes das partituras de cada coleção para manter as contagens dos cards e redirecionar endereços antigos. Ao adicionar um hino, acrescente seu slug à coleção correspondente. Os arquivos musicais não devem ser duplicados no blog.
+
+Consulte `docs/HINARIOS-GITHUB-PAGES.md` para ativar a publicação dos três repositórios.

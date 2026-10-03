@@ -46,7 +46,8 @@ for key,(name,subtitle,desc) in cats.items():
  if key=='luthier' and not matches:extra=f'<div class="luthier-panel"><img src="{BASE}/assets/violin.jpg" alt="Detalhe de um instrumento de cordas"><div><p class="eyebrow">CUIDADO QUE SE OUVE</p><h2>Serviços de luthier</h2><p>Este espaço reunirá informações sobre avaliação, regulagem e manutenção de instrumentos.</p><p>Os serviços disponíveis, a região de atendimento e os contatos serão publicados aqui em breve.</p></div></div>'
  if key=='tutoriais':extra+='<div class="video-panel"><span class="video-symbol" aria-hidden="true">▷</span><div><p class="eyebrow">PARA VER E PRATICAR</p><h2>MuseScore em vídeo</h2><p>Tutoriais oficiais para começar a escrever partituras e explorar o programa. Conteúdo em inglês.</p><a class="button" href="https://musescore.org/en/tutorials">Assistir aos tutoriais oficiais</a></div></div>'
  save(key,name,f'<section class="category-page"><p class="eyebrow">CLAVE SOL / {name.upper()}</p><h1>{subtitle}<span>.</span></h1><p class="lead">{desc}</p><div class="cards">{"".join(card(a) for a in matches)}</div>{extra}</section>')
-build_music(OUT,BASE,page,catalog)
+external_hymns = json.loads((ROOT/'external_hymns.json').read_text())
+build_music(OUT,BASE,page,catalog,external_hymns)
 page_aliases = json.loads((ROOT/'page_aliases.json').read_text())
 for old, new in page_aliases.items():
  target = OUT/old/'index.html'
@@ -67,4 +68,7 @@ seo_aliases = {'musica': 'partituras', 'musica/msa': 'partituras/msa'}
 seo_aliases.update(page_aliases)
 seo_aliases.update({score.legacy: score.route for score in catalog.scores if score.legacy})
 finish_seo(OUT, BASE, json.loads((ROOT/'seo.json').read_text()), seo_metadata, seo_aliases)
+# Keep shared score URLs usable after moving the collections to separate sites.
+from external_hymns import write_redirects
+write_redirects(OUT, BASE, external_hymns)
 finish_build(OUT, BASE)
