@@ -261,3 +261,30 @@ Os hinários Bb, Eb e C ficam, respectivamente, nos repositórios `clavesol-hino
 O arquivo `external_hymns.json` do blog guarda os endereços e os nomes das partituras de cada coleção para manter as contagens dos cards e redirecionar endereços antigos. Ao adicionar um hino, acrescente seu slug à coleção correspondente. Os arquivos musicais não devem ser duplicados no blog.
 
 Consulte `docs/HINARIOS-GITHUB-PAGES.md` para ativar a publicação dos três repositórios.
+
+### Posições invisíveis exportadas pelo MuseScore
+
+O importador trata automaticamente posições extras de cursor com largura zero, como as encontradas nos hinos 4 e 82 de Bb. Elas só são removidas quando explicam exatamente o excesso em relação ao MusicXML. As verificações de ordem, quantidade de compassos e associação das posições aos compassos continuam obrigatórias. O MSCZ original não é alterado. A correção também vale para o importador em lote; para arquivos marcados anteriormente como excluídos, use a opção `--tentar-excluidos` quando decidir executar novamente o lote.
+
+### Ritornelos e casas numeradas
+
+O importador expande ritornelos em uma sequência de execução, mantendo os SVGs originais. Suporta retorno ao início quando não há abertura explícita, ritornelos consecutivos ou aninhados sem ambiguidade, e casas simples ou compartilhadas (`1,2` e depois `3`). Som, cursor, fermatas e BPM acompanham cada passagem; a barra de progresso inclui todas as repetições.
+
+As propriedades de reprodução precisam concordar com a impressão: escrever “1.2.” sobre uma casa não configura automaticamente as passagens 1 e 2. Casas incompletas, conflitantes entre partes ou ritornelos sem fechamento são rejeitados com um diagnóstico. D.C., D.S., Coda e Fine como comandos de salto ainda não estão implementados; uma barra final comum é suportada. O importador não deduz esses comandos a partir de textos decorativos.
+
+Antes de gravar qualquer asset, o percurso completo, a quantidade de posições e a associação de cada posição à sua passagem são conferidos contra a exportação do MuseScore. Não há PDF nem áudio gravado nesse processo.
+
+No hino 226 de Bb, foram ajustadas apenas as passagens da casa “1.2.” e as três execuções do ritornelo. Backup original: `~/Documents/ClaveSol/lab/backups/hino-226-bb-20261003-001004/hino-226.mscz`.
+
+### Tentar novamente somente as pastas de faltantes
+
+Para processar `bb-falta`, `do-falta` e `eb-falta`, preservando os destinos corretos `bb`, `do` e `eb`:
+
+```bash
+.venv/bin/python scripts/importar_hinarios.py --somente-faltantes \
+  --source ~/Documents/ClaveSol/lab/Musescore4 \
+  --stage ~/Documents/ClaveSol/lab/hinarios-faltantes-2026-10-03 \
+  --workers 4
+```
+
+O lote continua sem publicar e sem gerar PDFs: prepara apenas os casos com player e cursor válidos, com relatório dos demais. Uma pasta de resultados nova evita reutilizar resultados de versões antigas do importador. Para retomar a mesma execução, use o mesmo comando; para repetir tentativas anteriormente excluídas nessa pasta de resultados, acrescente `--tentar-excluidos`.

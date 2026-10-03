@@ -33,3 +33,7 @@ O botão **Andamento original** restaura o andamento inicial. Digitar e confirma
 ## Fermatas
 
 O player sintetizado prolonga em 50% o intervalo das notas e pausas com fermata. Marcas simultâneas ou sobrepostas entre vozes são combinadas, sem multiplicar o prolongamento. Som, cursor, busca e ajuste de BPM usam o mesmo relógio. É uma interpretação simples para estudo, não uma reprodução dos fatores personalizados do MuseScore. O MusicXML original e o timing exportado permanecem intactos; o build inclui as marcações na sequência e o navegador aplica a duração adicional. O conversor `musicxml_audio.py` e seu teste de fermatas também são sincronizados.
+
+O comando também sincroniza `criar_licao.py` e executa seu teste de posições invisíveis, mantendo essa correção do importador nos quatro projetos.
+
+O módulo `musicxml_repeats.py` e seus testes também são distribuídos pelo script. Eles expandem ritornelos e casas na importação e no build. O player usa a sequência resultante, sem duplicar páginas visuais. A sincronização não reimporta automaticamente os hinos anteriormente excluídos.

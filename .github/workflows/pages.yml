@@ -35,6 +35,10 @@ jobs:
       - run: python tests/musicxml.test.py
       - run: python tests/import-lesson.test.py
       - run: python tests/hymn-batch.test.py
+      - run: python tests/fermatas.test.py
+      - run: python tests/import-sync.test.py
+      - run: python tests/repeats.test.py
+      - run: python tests/sync-player.test.py
       - uses: actions/configure-pages@v5
         id: pages
       - run: python build.py

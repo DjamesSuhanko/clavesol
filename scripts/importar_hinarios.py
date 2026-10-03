@@ -92,6 +92,7 @@ def main():
     parser.add_argument('--musescore',default=os.environ.get('MUSESCORE',str(Path.home()/'bin/musescore')))
     parser.add_argument('--workers',type=int,default=4)
     parser.add_argument('--tentar-excluidos',action='store_true')
+    parser.add_argument('--somente-faltantes',action='store_true',help='Lê bb-falta, eb-falta e do-falta, mantendo o destino bb/eb/do.')
     args = parser.parse_args()
     source=args.source.expanduser().resolve();stage=args.stage.expanduser().resolve()
     if stage == ROOT or stage.is_relative_to(ROOT) or stage.is_relative_to(source) or source.is_relative_to(stage):
@@ -100,8 +101,9 @@ def main():
     if not shutil.which(args.musescore): parser.error('MuseScore não encontrado. Informe --musescore.')
     jobs=[]
     for collection in LABELS:
-        files=sorted((source/collection).glob('*.mscz'))
-        if not files: parser.error(f'Nenhum .mscz em {source/collection}')
+        source_folder=source/(collection+'-falta' if args.somente_faltantes else collection)
+        files=sorted(source_folder.glob('*.mscz'))
+        if not files: parser.error(f'Nenhum .mscz em {source_folder}')
         slugs=[slugify(p.stem) for p in files]
         if len(set(slugs)) != len(slugs): parser.error(f'Nomes normalizados repetidos em {collection}')
         jobs.extend((p,collection,stage,args.musescore,args.tentar_excluidos) for p in files)
@@ -133,7 +135,7 @@ def main():
         writer=csv.writer(stream);writer.writerow(['arquivo_original','destino','motivo'])
         for record in results:
             if record['status']=='excluido':writer.writerow([record['source'],record['key'],record['reason']])
-    summary={'total':len(jobs),'funcionais':len(keys),'excluidos':len(jobs)-len(keys),'segundos':round(time.monotonic()-start),'source':str(source),'stage':str(stage)}
+    summary={'total':len(jobs),'funcionais':len(keys),'excluidos':len(jobs)-len(keys),'segundos':round(time.monotonic()-start),'source':str(source),'stage':str(stage),'somente_faltantes':args.somente_faltantes}
     (stage/'CONCLUIDO.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2))
     print(f'CONCLUÍDO: {len(keys)} funcionais, {len(jobs)-len(keys)} excluídos. Avise ao Codex que terminou para revisar e publicar.',flush=True)
 

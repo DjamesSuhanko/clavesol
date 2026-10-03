@@ -44,7 +44,7 @@ class MusicXMLTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'andamento ausente'):
             self.parse('<measure>'+note()+'</measure>')
         with self.assertRaisesRegex(ValueError,'recorded'):
-            self.parse('<measure>'+note()+'<barline><repeat direction="backward"/></barline></measure>',60)
+            self.parse('<measure>'+note(extra='<grace/>')+'</measure>',60)
 
     def test_msa109_no_cumulative_drift_after_final_fermata(self):
         import json

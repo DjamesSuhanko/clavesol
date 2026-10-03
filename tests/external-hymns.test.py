@@ -20,7 +20,9 @@ for key,value in config.items():
   redirect=(root/f'dist/partituras/{key}/{slug}/index.html').read_text()
   assert f'content="0;url={value["url"]}partituras/{key}/{slug}/"' in redirect
   assert not (root/f'dist/assets/music/{key}/{slug}').exists()
-assert page.count('241 partituras')==3
+from collections import Counter
+for count, occurrences in Counter(len(c['scores']) for c in config.values()).items():
+ assert page.count(f'{count} partituras') == occurrences
 assert 'Outros' in page
 assert (root/'dist/partituras/hinos/outros/144-a-vida-eterna/index.html').is_file()
-print('External cards, counts, 723 deep-link redirects and local Outros: OK')
+print('External cards, counts, all deep-link redirects and local Outros: OK')
