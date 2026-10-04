@@ -2,6 +2,7 @@ export const tonalities=[['Dó',0],['Sol',1],['Ré',2],['Lá',3],['Mi',4],['Si',
 // Treble staff: F5 top line at y=50, E4 bottom line at y=130.
 export const positions=[['Sol','acima da 5ª linha'],['Fá','5ª linha'],['Mi','4º espaço'],['Ré','4ª linha'],['Dó','3º espaço'],['Si','3ª linha'],['Lá','2º espaço'],['Sol','2ª linha'],['Fá','1º espaço'],['Mi','1ª linha']];
 const sharpOrder=[1,4,0,3,6,2,5],flatOrder=[5,2,6,3,7,4,8];
+export function conventionalRow(name,kind){return (kind==='flat'?flatOrder:sharpOrder).find(row=>positions[row][0]===name);}
 export function expected(index){const count=tonalities[index][1];return (count<0?flatOrder:sharpOrder).slice(0,Math.abs(count)).map(row=>({row,kind:count<0?'flat':'sharp'}));}
 export function grade(index,entries){
  const answer=expected(index);
@@ -16,7 +17,13 @@ if(typeof document!=='undefined'&&document.getElementById('signature-app')){
  const get=id=>document.getElementById('signature-'+id);
  let entries=[],kind='sharp',solved=false,tried=false,answered=0,correct=0,keyIndex=1+Math.floor(Math.random()*14);
  tonalities.forEach(([name],i)=>{const button=document.createElement('button');button.type='button';button.textContent=name;button.setAttribute('aria-label',name+' maior');button.addEventListener('click',()=>{keyIndex=i;start();});get('keys').append(button);});
- positions.forEach(([name,place],row)=>{const button=document.createElement('button');button.type='button';button.setAttribute('aria-label','Inserir em '+name+' — '+place);const title=document.createElement('strong'),detail=document.createElement('small');title.textContent=name;detail.textContent=place;button.append(title,detail);button.addEventListener('click',()=>add(row));get('positions').append(button);});
+ function noteButtons(){
+  get('positions').replaceChildren();
+  for(const name of ['Dó','Ré','Mi','Fá','Sol','Lá','Si']){
+   const row=conventionalRow(name,kind),place=positions[row][1],button=document.createElement('button');button.type='button';button.setAttribute('aria-label','Inserir '+name+(kind==='flat'?'♭':'♯'));
+   const title=document.createElement('strong'),detail=document.createElement('small');title.textContent=name+(kind==='flat'?'♭':'♯');detail.textContent=place;button.append(title,detail);button.addEventListener('click',()=>add(row));button.disabled=solved||entries.length===7;get('positions').append(button);
+  }
+ }
  const describe=()=>entries.map((e,i)=>`${i+1}. ${positions[e.row][0]}${e.kind==='sharp'?'♯':'♭'} (${positions[e.row][1]})`).join('; ');
  function render(){
   const staff=get('staff');staff.replaceChildren();
@@ -33,10 +40,10 @@ if(typeof document!=='undefined'&&document.getElementById('signature-app')){
  function add(row){
   if(solved)return;
   if(entries.length>=7){get('feedback').textContent='A armadura aceita até sete sinais. Use Desfazer para corrigir.';return;}
-  entries.push({kind,row});resetFeedback();render();
+  row=conventionalRow(positions[row][0],kind);entries.push({kind,row});resetFeedback();render();
  }
  function start(){Array.from(get('keys').children).forEach((button,i)=>button.setAttribute('aria-pressed',String(i===keyIndex)));entries=[];solved=false;tried=false;resetFeedback();get('title').textContent=tonalities[keyIndex][0]+' maior';get('feedback').textContent='Preencha a armadura e confira. Em Dó maior, deixe o pentagrama sem alterações.';render();}
- for(const type of ['sharp','flat'])get(type).addEventListener('click',()=>{kind=type;for(const t of ['sharp','flat'])get(t).setAttribute('aria-pressed',String(t===type));});
+ for(const type of ['sharp','flat'])get(type).addEventListener('click',()=>{kind=type;for(const t of ['sharp','flat'])get(t).setAttribute('aria-pressed',String(t===type));noteButtons();});
  get('staff').addEventListener('click',event=>{
   const point=get('staff').createSVGPoint();point.x=event.clientX;point.y=event.clientY;
   const p=point.matrixTransform(get('staff').getScreenCTM().inverse());
@@ -52,5 +59,5 @@ if(typeof document!=='undefined'&&document.getElementById('signature-app')){
   get('score').textContent=`${correct} acertos de primeira em ${answered} respondidos`;render();
  });
  get('next').addEventListener('click',()=>{keyIndex=(keyIndex+1+Math.floor(Math.random()*14))%15;start();});
- get('app').hidden=false;start();
+ noteButtons();get('app').hidden=false;start();
 }
