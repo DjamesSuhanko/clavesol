@@ -9,6 +9,7 @@ from compass_page import calculator_card, calculator_body
 from rhythm_page import exercise_card, exercise_body
 from equivalence_page import equivalence_card, equivalence_body
 from scales_page import scales_card, scales_body
+from signatures_page import signatures_card, signatures_body
 ROOT=Path(__file__).parent; OUT=ROOT/'dist'; BASE=os.environ.get('BASE_PATH','').rstrip('/')
 catalog = load_catalog(ROOT)
 if OUT.exists(): shutil.rmtree(OUT)
@@ -22,7 +23,7 @@ for score in catalog.scores:
    target=folder/name
    if target.exists():target.unlink()
 E=html.escape
-cats={'gem':('GEM','Grupo de Ensino Musical','Fundamentos, leitura e prática para aprender em conjunto.'),'artigos':('Artigos','Tudo sobre música','Ideias e ferramentas para a música na orquestra e em casa.'),'doar':('Doações','Apoie o Clave Sol','Instrumentos, materiais e outras formas de contribuir com a música.'),'luthier':('Luthier','Serviços de luthier','O cuidado com o instrumento também faz parte da música.'),'links':('Links','Aplicativos musicais','Ferramentas para escrever, ouvir e compreender o som.'),'tutoriais':('Tutoriais','Dicas e técnicas','Um passo de cada vez. Mais confiança a cada ensaio.')}
+cats={'gem':('GEM','Grupo de Ensino Musical','Fundamentos, leitura e prática para aprender em conjunto.'),'artigos':('Artigos','Tudo sobre música','Ideias e ferramentas para a música na orquestra e em casa.'),'luthier':('Luthier','Serviços de luthier','O cuidado com o instrumento também faz parte da música.'),'links':('Links','Aplicativos musicais','Ferramentas para escrever, ouvir e compreender o som.'),'tutoriais':('Tutoriais','Dicas e técnicas','Um passo de cada vez. Mais confiança a cada ensaio.')}
 def page(title,body):
  nav=''.join(f'<a href="{BASE}/{k}/">{v[0]}</a>' for k,v in cats.items())
  return f'''<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Clave Sol: partituras, ensino musical, artigos, luthier e aplicativos para a orquestra e para casa."><meta name="theme-color" content="#123b35"><title>{E(title)} · Clave Sol</title><link rel="icon" href="{BASE}/assets/icon.svg"><link rel="stylesheet" href="{BASE}/assets/style.css"></head><body><a class="skip" href="#conteudo">Pular para o conteúdo</a><div class="topline">MÚSICA PARA APRENDER, PRATICAR E COMPARTILHAR</div><header><a class="brand" href="{BASE}/"><img class="brand-logo" src="{BASE}/assets/logo-clavesol.webp" alt="" width="70" height="80"><span>Clave Sol<small>UM ENCONTRO COM A MÚSICA</small></span></a><nav aria-label="Principal">{nav}<a class="nav-score" href="{BASE}/partituras/">Partituras</a></nav></header><main id="conteudo">{body}</main><footer><a class="brand" href="{BASE}/"><img class="brand-logo" src="{BASE}/assets/logo-clavesol.webp" alt="" width="70" height="80"><span>Clave Sol<small>APRENDER. TOCAR. COMPARTILHAR.</small></span></a><p>Da primeira nota ao próximo ensaio.<br>Um espaço musical de Djames Suhanko.</p><a class="social-link" href="https://www.youtube.com/@ClaveSolMusic"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><rect x="1" y="4" width="22" height="16" rx="5" fill="currentColor"/><path d="M10 8l6 4-6 4z" fill="var(--paper)"/></svg><span>Clave Sol Music<small>Nosso canal no YouTube</small></span></a></footer><script defer src="{BASE}/assets/updates.js" data-version="__CLAVESOL_VERSION__" data-manifest="{BASE}/version.json"></script></body></html>'''
@@ -46,16 +47,16 @@ save('gem/calculadora-de-compasso','Calculadora de Compasso',calculator_body(BAS
 save('gem/exercicio-de-compasso','Exercício de Compasso',exercise_body(BASE))
 save('gem/correspondencia-de-valores','Correspondência de Valores',equivalence_body(BASE))
 save('gem/escalas-maiores','Escalas Maiores',scales_body(BASE))
+save('gem/armaduras-de-clave','Armaduras de Clave',signatures_body(BASE))
 for key,(name,subtitle,desc) in cats.items():
  matches=articles if key=='artigos' else [a for a in articles if a['category']==key]
  extra=''
- if key=='doar' and not matches:extra='<p>Em breve, você encontrará aqui as formas de contribuir com instrumentos, materiais e doações em dinheiro.</p>'
  if key=='gem':extra=f'<div class="section-heading"><h2>Pratique com a partitura</h2></div>{scorecard()}'
  if key=='luthier' and not matches:extra=f'<div class="luthier-panel"><img src="{BASE}/assets/violin.jpg" alt="Detalhe de um instrumento de cordas"><div><p class="eyebrow">CUIDADO QUE SE OUVE</p><h2>Serviços de luthier</h2><p>Este espaço reunirá informações sobre avaliação, regulagem e manutenção de instrumentos.</p><p>Os serviços disponíveis, a região de atendimento e os contatos serão publicados aqui em breve.</p></div></div>'
  if key=='tutoriais':extra+='<div class="video-panel"><span class="video-symbol" aria-hidden="true">▷</span><div><p class="eyebrow">PARA VER E PRATICAR</p><h2>MuseScore em vídeo</h2><p>Tutoriais oficiais para começar a escrever partituras e explorar o programa. Conteúdo em inglês.</p><a class="button" href="https://musescore.org/en/tutorials">Assistir aos tutoriais oficiais</a></div></div>'
  listing='<div class="cards">'+''.join(card(a) for a in matches)+'</div>'
  if key=='gem':
-  tools=calculator_card(BASE)+exercise_card(BASE)+equivalence_card(BASE)+scales_card(BASE)
+  tools=calculator_card(BASE)+exercise_card(BASE)+equivalence_card(BASE)+scales_card(BASE)+signatures_card(BASE)
   listing=f'<section class="gem-region" aria-labelledby="gem-tools"><div class="section-heading"><div><p class="eyebrow">APRENDER FAZENDO</p><h2 id="gem-tools">Ferramentas e exercícios</h2></div></div><div class="cards">{tools}</div></section><section class="gem-region" aria-labelledby="gem-articles"><div class="section-heading"><div><p class="eyebrow">PARA LER E APROFUNDAR</p><h2 id="gem-articles">Artigos do GEM</h2></div></div>{listing}</section>'
  save(key,name,f'<section class="category-page"><p class="eyebrow">CLAVE SOL / {name.upper()}</p><h1>{subtitle}<span>.</span></h1><p class="lead">{desc}</p>{listing}{extra}</section>')
 external_hymns = json.loads((ROOT/'external_hymns.json').read_text())
