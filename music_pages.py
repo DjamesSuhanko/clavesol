@@ -18,7 +18,7 @@ def score_card(score, base, catalog):
     if score.downloads:
         name, label = score.downloads[0]
         download = f'<a class="download" href="{assets}/{name}" download>Baixar {label}</a>'
-    return f'<article class="score-card">{thumb}<div><p class="eyebrow">{E(catalog.groups[score.parent].title)}</p><h3>{E(score.title)}</h3><p>{E(meta)}</p><a class="button" href="{base}/{score.route}/">Abrir partitura</a>{download}</div></article>'
+    return f'<article class="score-card" data-search="{E(str(score.lesson or "") + " " + score.title + " " + score.author + " " + score.instrument)}">{thumb}<div><p class="eyebrow">{E(catalog.groups[score.parent].title)}</p><h3>{E(score.title)}</h3><p>{E(meta)}</p><a class="button" href="{base}/{score.route}/">Abrir partitura</a>{download}</div></article>'
 
 
 def featured_score(catalog, base):
@@ -63,7 +63,7 @@ def score_body(score, catalog, base):
     return f'''<section class="article-layout score-section"><nav class="breadcrumbs" aria-label="Caminho da partitura">{'<span>/</span>'.join(crumbs)}</nav><p class="eyebrow">ESTANTE DE PARTITURAS</p><h1>{E(score.title)}</h1><p class="lead">{E(subtitle)}</p><p>{E(score.description)}</p><div class="score-toolbar">{toolbar}</div>{player}{pager}{''.join(sheets)}<article class="prose score-notes">{notes}</article></section>{script}'''
 
 
-def build_music(out, base, page, catalog, external=None):
+def build_music(out, base, page, catalog, external=None, collections=None):
     external = external or {}
     def save(route, title, body):
         target = out / route
@@ -76,8 +76,9 @@ def build_music(out, base, page, catalog, external=None):
         explore = external.get(group.key, {}).get('url', f'{base}/partituras/{group.key}/')
         return f'<article class="card"><div class="card-body"><p class="eyebrow">{quantity(count, "partitura")}</p><h2><a href="{base}/partituras/{group.key}/">{E(group.title)}</a></h2><p>{E(group.description)}</p><a class="text-link" href="{E(explore)}">Explorar {E(group.title)}</a></div></article>'
 
+    collection_cards = ''.join(f'<article class="card"><div class="card-body"><p class="eyebrow">HINÁRIO</p><h2><a href="{E(item["url"])}">{E(item["title"])}</a></h2><p>{E(item["description"])}</p><a class="text-link" href="{E(item["url"])}">Explorar {E(item["title"])}</a></div></article>' for item in (collections or []))
     categories = [g for key, g in catalog.groups.items() if '/' not in key]
-    intro = f'<section class="category-page"><p class="eyebrow">A SUA ESTANTE MUSICAL</p><h1>Partituras para<br><em>ler, ouvir e tocar.</em></h1><p class="lead">Escolha uma categoria para encontrar os estudos e as coleções.</p><div class="cards score-categories">{"".join(group_card(g) for g in categories)}</div></section>'
+    intro = f'<section class="category-page"><p class="eyebrow">A SUA ESTANTE MUSICAL</p><h1>Partituras para<br><em>ler, ouvir e tocar.</em></h1><p class="lead">Escolha uma categoria para encontrar os estudos e as coleções.</p><div class="cards score-categories">{"".join(group_card(g) for g in categories)}{collection_cards}</div></section>'
     save('partituras', 'Partituras', intro)
     save('musica', 'Partituras', intro)
     for key, group in catalog.groups.items():
@@ -90,6 +91,8 @@ def build_music(out, base, page, catalog, external=None):
             children.sort(key=lambda group: order.get(group.key, 4))
         scores = [s for s in catalog.scores if s.parent == key]
         content = f'<div class="cards score-categories">{"".join(group_card(g) for g in children)}</div>' if children else ''
+        if key == 'hinos' and collection_cards:
+            content += f'<div class="cards score-categories">{collection_cards}</div>'
         content += f'<div class="score-list">{"".join(score_card(s, base, catalog) for s in scores)}</div>'
         if not children and not scores:
             content += '<p class="catalog-empty">Ainda não há partituras publicadas nesta coleção.</p>'

@@ -29,6 +29,7 @@ jobs:
       - run: node tests/equivalence.test.mjs
       - run: node tests/scales.test.mjs
       - run: node tests/signatures.test.mjs
+      - run: node tests/list-search.test.mjs
       - run: node tests/music.test.mjs
       - run: node tests/music-player.test.mjs
       - run: node tests/music-synth.test.mjs

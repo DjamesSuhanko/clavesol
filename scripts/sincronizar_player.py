@@ -8,7 +8,8 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 NAMES = ('clavesol', 'clavesol-hinos-bb', 'clavesol-hinos-eb', 'clavesol-hinos-do')
-SHARED = ('assets/music.js', 'assets/music-synth.mjs', 'assets/music-timing.mjs',
+SHARED = ('list_search.py', 'assets/list-search.css', 'assets/list-search.mjs',
+          'tests/list-search.test.mjs', 'assets/music.js', 'assets/music-synth.mjs', 'assets/music-timing.mjs',
           'assets/style.css', 'music_pages.py', 'tests/music-player.test.mjs',
           'tests/music-synth.test.mjs', 'musicxml_audio.py', 'tests/fermatas.test.py', 'criar_licao.py', 'tests/import-sync.test.py', 'musicxml_repeats.py', 'tests/repeats.test.py')
 SOURCE_ONLY = ('scripts/sincronizar_player.py', 'docs/SINCRONIZAR-PLAYER.md',

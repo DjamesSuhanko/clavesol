@@ -1,3 +1,4 @@
+from list_search import add_search
 from pathlib import Path
 import os,shutil,html,json
 import markdown
@@ -25,6 +26,7 @@ for score in catalog.scores:
 E=html.escape
 cats={'gem':('GEM','Grupo de Ensino Musical','Fundamentos, leitura e prática para aprender em conjunto.'),'artigos':('Artigos','Tudo sobre música','Ideias e ferramentas para a música na orquestra e em casa.'),'luthier':('Luthier','Serviços de luthier','O cuidado com o instrumento também faz parte da música.'),'links':('Links','Aplicativos musicais','Ferramentas para escrever, ouvir e compreender o som.'),'tutoriais':('Tutoriais','Dicas e técnicas','Um passo de cada vez. Mais confiança a cada ensaio.')}
 def page(title,body):
+ body=add_search(body,BASE)
  nav=''.join(f'<a href="{BASE}/{k}/">{v[0]}</a>' for k,v in cats.items())
  return f'''<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Clave Sol: partituras, ensino musical, artigos, luthier e aplicativos para a orquestra e para casa."><meta name="theme-color" content="#123b35"><title>{E(title)} · Clave Sol</title><link rel="icon" href="{BASE}/assets/icon.svg"><link rel="stylesheet" href="{BASE}/assets/style.css"></head><body><a class="skip" href="#conteudo">Pular para o conteúdo</a><div class="topline">MÚSICA PARA APRENDER, PRATICAR E COMPARTILHAR</div><header><a class="brand" href="{BASE}/"><img class="brand-logo" src="{BASE}/assets/logo-clavesol.webp" alt="" width="70" height="80"><span>Clave Sol<small>UM ENCONTRO COM A MÚSICA</small></span></a><nav aria-label="Principal">{nav}<a class="nav-score" href="{BASE}/partituras/">Partituras</a></nav></header><main id="conteudo">{body}</main><footer><a class="brand" href="{BASE}/"><img class="brand-logo" src="{BASE}/assets/logo-clavesol.webp" alt="" width="70" height="80"><span>Clave Sol<small>APRENDER. TOCAR. COMPARTILHAR.</small></span></a><p>Da primeira nota ao próximo ensaio.<br>Um espaço musical de Djames Suhanko.</p><a class="social-link" href="https://www.youtube.com/@ClaveSolMusic"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><rect x="1" y="4" width="22" height="16" rx="5" fill="currentColor"/><path d="M10 8l6 4-6 4z" fill="var(--paper)"/></svg><span>Clave Sol Music<small>Nosso canal no YouTube</small></span></a></footer><script defer src="{BASE}/assets/updates.js" data-version="__CLAVESOL_VERSION__" data-manifest="{BASE}/version.json"></script></body></html>'''
 def save(route,title,body):
@@ -60,7 +62,7 @@ for key,(name,subtitle,desc) in cats.items():
   listing=f'<section class="gem-region" aria-labelledby="gem-tools"><div class="section-heading"><div><p class="eyebrow">APRENDER FAZENDO</p><h2 id="gem-tools">Ferramentas e exercícios</h2></div></div><div class="cards">{tools}</div></section><section class="gem-region" aria-labelledby="gem-articles"><div class="section-heading"><div><p class="eyebrow">PARA LER E APROFUNDAR</p><h2 id="gem-articles">Artigos do GEM</h2></div></div>{listing}</section>'
  save(key,name,f'<section class="category-page"><p class="eyebrow">CLAVE SOL / {name.upper()}</p><h1>{subtitle}<span>.</span></h1><p class="lead">{desc}</p>{listing}{extra}</section>')
 external_hymns = json.loads((ROOT/'external_hymns.json').read_text())
-build_music(OUT,BASE,page,catalog,external_hymns)
+build_music(OUT,BASE,page,catalog,external_hymns,collections=[{'title':'Cantor Cristão','url':'https://cantor.clavesol.com.br/','description':'Hinos do Cantor Cristão com busca, partitura e player.'}])
 page_aliases = json.loads((ROOT/'page_aliases.json').read_text())
 for old, new in page_aliases.items():
  target = OUT/old/'index.html'
