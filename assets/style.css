@@ -12,3 +12,6 @@
 .social-link{display:inline-flex;align-items:center;gap:10px;flex-shrink:0;color:var(--ink)}.social-link svg{flex-shrink:0}.social-link small{display:block;font-size:11px;color:var(--muted)}
 
 #playback-bpm{width:7em;padding:9px;border:1px solid #9baa98;border-radius:3px;background:var(--paper);color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* Ferramenta do GEM: capa com a paleta do blog. */
+.compass-cover{background:var(--green);color:#ead6b1;display:grid;place-items:center}.compass-cover>span{display:flex;align-items:center;gap:8px}.compass-cover svg{width:55px;height:65px}.compass-cover b{font-size:24px;font-weight:400}.compass-cover>span>span{font:60px Georgia,serif}
