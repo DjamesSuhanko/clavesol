@@ -1,6 +1,7 @@
 Title: Friture
 Description: Análise de áudio em tempo real, espectro e harmônicos.
 Category: links
+Image: friture.webp
 
 ## Sobre o aplicativo
 

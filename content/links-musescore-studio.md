@@ -1,7 +1,7 @@
 Title: MuseScore Studio
 Description: Escrita de partituras, MusicXML e código aberto.
 Category: links
-
+Image: musescore.webp
 ## Sobre o aplicativo
 
 Escrita de partituras, MusicXML e código aberto.
