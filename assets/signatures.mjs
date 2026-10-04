@@ -21,10 +21,10 @@ if(typeof document!=='undefined'&&document.getElementById('signature-app')){
  function render(){
   const staff=get('staff');staff.replaceChildren();
   const paths=[];
-  if(!solved&&entries.length<7)paths.push(`<rect x="${120+entries.length*62}" y="18" width="42" height="142" rx="6" fill="#b38a4d" opacity=".13"/>`);
+  if(!solved&&entries.length<7)paths.push(`<rect x="${92+entries.length*24}" y="18" width="24" height="142" rx="6" fill="#b38a4d" opacity=".13"/>`);
   for(let y=50;y<=130;y+=20)paths.push(`<path d="M20 ${y}H600" stroke="currentColor" stroke-width="1.3" opacity=".65"/>`);
   paths.push('<path d="M20 50v80M600 50v80" stroke="currentColor" stroke-width="1.5"/>');
-  entries.forEach((e,i)=>paths.push(signPath(e.kind,141+i*62,40+e.row*10)));
+  entries.forEach((e,i)=>paths.push(signPath(e.kind,104+i*24,40+e.row*10)));
   staff.innerHTML=paths.join('');staff.append(document.getElementById('signature-clef').content.querySelector('path').cloneNode(true));
   const description=describe();staff.setAttribute('aria-label','Pentagrama em clave de Sol. '+(description||'Sem alterações.'));get('written').textContent=description||'Nenhum sinal inserido.';
   get('undo').disabled=get('clear').disabled=solved||entries.length===0;for(const button of get('positions').children)button.disabled=solved||entries.length===7;get('check').disabled=solved;
@@ -40,7 +40,7 @@ if(typeof document!=='undefined'&&document.getElementById('signature-app')){
  get('staff').addEventListener('click',event=>{
   const point=get('staff').createSVGPoint();point.x=event.clientX;point.y=event.clientY;
   const p=point.matrixTransform(get('staff').getScreenCTM().inverse());
-  if(p.x>=110&&p.x<=600&&p.y>=30&&p.y<=140){add(rowAt(p.y));}
+  if(p.x>=90&&p.x<=600&&p.y>=30&&p.y<=140){add(rowAt(p.y));}
  });
  get('undo').addEventListener('click',()=>{entries.pop();resetFeedback();render();});
  get('clear').addEventListener('click',()=>{entries=[];resetFeedback();render();});
