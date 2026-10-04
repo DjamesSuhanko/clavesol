@@ -18,7 +18,3 @@ O preço dele é 19,90. Se você não pegar de graça agora que sou obrigado a t
 ![MyLuthier]({{BASE}}/assets/myluthier.webp)
 
 
-
-## Acessar o aplicativo
-
-[Visitar o site oficial do Audacity](https://www.audacityteam.org/)
