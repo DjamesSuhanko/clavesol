@@ -15,3 +15,5 @@
 
 /* Ferramenta do GEM: capa com a paleta do blog. */
 .compass-cover{background:var(--green);color:#ead6b1;display:grid;place-items:center}.compass-cover>span{display:flex;align-items:center;gap:8px}.compass-cover svg{width:55px;height:65px}.compass-cover b{font-size:24px;font-weight:400}.compass-cover>span>span{font:60px Georgia,serif}
+
+.gem-region{margin-top:44px}.gem-region+.gem-region{border-top:1px solid var(--line);padding-top:42px;margin-top:52px}.gem-region .section-heading{margin-bottom:24px}.gem-region .section-heading h2{font-size:32px}

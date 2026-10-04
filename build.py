@@ -7,6 +7,7 @@ from cache_assets import finish_build
 from seo import finish_seo
 from compass_page import calculator_card, calculator_body
 from rhythm_page import exercise_card, exercise_body
+from equivalence_page import equivalence_card, equivalence_body
 ROOT=Path(__file__).parent; OUT=ROOT/'dist'; BASE=os.environ.get('BASE_PATH','').rstrip('/')
 catalog = load_catalog(ROOT)
 if OUT.exists(): shutil.rmtree(OUT)
@@ -42,6 +43,7 @@ for a in articles:
  save('artigos/'+a['slug'],a['title'],f'<section class="article-layout"><a class="text-link" href="{BASE}/{a["category"]}/">{cats[a["category"]][0]}</a><p class="eyebrow">CADERNO CLAVE SOL</p><h1>{E(a["title"])}</h1><p class="lead">{E(a["description"])}</p><div class="article-grid"><article class="prose">{a["content"].replace("{{BASE}}",BASE)}</article><aside><h2>Nesta leitura</h2>{a["toc"]}<a href="{BASE}/partituras/">Estante de partituras</a></aside></div></section>')
 save('gem/calculadora-de-compasso','Calculadora de Compasso',calculator_body(BASE))
 save('gem/exercicio-de-compasso','Exercício de Compasso',exercise_body(BASE))
+save('gem/correspondencia-de-valores','Correspondência de Valores',equivalence_body(BASE))
 for key,(name,subtitle,desc) in cats.items():
  matches=articles if key=='artigos' else [a for a in articles if a['category']==key]
  extra=''
@@ -49,7 +51,11 @@ for key,(name,subtitle,desc) in cats.items():
  if key=='gem':extra=f'<div class="section-heading"><h2>Pratique com a partitura</h2></div>{scorecard()}'
  if key=='luthier' and not matches:extra=f'<div class="luthier-panel"><img src="{BASE}/assets/violin.jpg" alt="Detalhe de um instrumento de cordas"><div><p class="eyebrow">CUIDADO QUE SE OUVE</p><h2>Serviços de luthier</h2><p>Este espaço reunirá informações sobre avaliação, regulagem e manutenção de instrumentos.</p><p>Os serviços disponíveis, a região de atendimento e os contatos serão publicados aqui em breve.</p></div></div>'
  if key=='tutoriais':extra+='<div class="video-panel"><span class="video-symbol" aria-hidden="true">▷</span><div><p class="eyebrow">PARA VER E PRATICAR</p><h2>MuseScore em vídeo</h2><p>Tutoriais oficiais para começar a escrever partituras e explorar o programa. Conteúdo em inglês.</p><a class="button" href="https://musescore.org/en/tutorials">Assistir aos tutoriais oficiais</a></div></div>'
- save(key,name,f'<section class="category-page"><p class="eyebrow">CLAVE SOL / {name.upper()}</p><h1>{subtitle}<span>.</span></h1><p class="lead">{desc}</p><div class="cards">{(calculator_card(BASE)+exercise_card(BASE)) if key=="gem" else ""}{"".join(card(a) for a in matches)}</div>{extra}</section>')
+ listing='<div class="cards">'+''.join(card(a) for a in matches)+'</div>'
+ if key=='gem':
+  tools=calculator_card(BASE)+exercise_card(BASE)+equivalence_card(BASE)
+  listing=f'<section class="gem-region" aria-labelledby="gem-tools"><div class="section-heading"><div><p class="eyebrow">APRENDER FAZENDO</p><h2 id="gem-tools">Ferramentas e exercícios</h2></div></div><div class="cards">{tools}</div></section><section class="gem-region" aria-labelledby="gem-articles"><div class="section-heading"><div><p class="eyebrow">PARA LER E APROFUNDAR</p><h2 id="gem-articles">Artigos do GEM</h2></div></div>{listing}</section>'
+ save(key,name,f'<section class="category-page"><p class="eyebrow">CLAVE SOL / {name.upper()}</p><h1>{subtitle}<span>.</span></h1><p class="lead">{desc}</p>{listing}{extra}</section>')
 external_hymns = json.loads((ROOT/'external_hymns.json').read_text())
 build_music(OUT,BASE,page,catalog,external_hymns)
 page_aliases = json.loads((ROOT/'page_aliases.json').read_text())
