@@ -62,7 +62,7 @@ for key,(name,subtitle,desc) in cats.items():
   listing=f'<section class="gem-region" aria-labelledby="gem-tools"><div class="section-heading"><div><p class="eyebrow">APRENDER FAZENDO</p><h2 id="gem-tools">Ferramentas e exercícios</h2></div></div><div class="cards">{tools}</div></section><section class="gem-region" aria-labelledby="gem-articles"><div class="section-heading"><div><p class="eyebrow">PARA LER E APROFUNDAR</p><h2 id="gem-articles">Artigos do GEM</h2></div></div>{listing}</section>'
  save(key,name,f'<section class="category-page"><p class="eyebrow">CLAVE SOL / {name.upper()}</p><h1>{subtitle}<span>.</span></h1><p class="lead">{desc}</p>{listing}{extra}</section>')
 external_hymns = json.loads((ROOT/'external_hymns.json').read_text())
-build_music(OUT,BASE,page,catalog,external_hymns,collections=[{'title':'Cantor Cristão','url':'https://cantor.clavesol.com.br/','description':'Hinos do Cantor Cristão com busca, partitura e player.'}])
+build_music(OUT,BASE,page,catalog,external_hymns)
 page_aliases = json.loads((ROOT/'page_aliases.json').read_text())
 for old, new in page_aliases.items():
  target = OUT/old/'index.html'
