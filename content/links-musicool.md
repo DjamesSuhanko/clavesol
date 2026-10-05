@@ -7,7 +7,7 @@ Image: Musicoolarticle.webp
 
 De fato, uma caixa de ferramentas.
 
-![Musicool tabs](Musicoolarticle.webp)
+![Musicool tabs](/assets/Musicoolarticle.webp)
 
 ### Afinador
 
@@ -36,3 +36,5 @@ O [Musicool](https://play.google.com/store/search?q=musicool&c=apps&hl=pt_BR) é
 ## Acessar o aplicativo Musicool
 
 Você pode fazer o download para Android diretamente na Play Store, digitando "Musicool" ou então Diretamente na Play Store, clicando nesse [link do Musicool](https://play.google.com/store/games?hl=pt_BR).
+
+E a [página do Musicool](https://musicool.clavesol.com.br), para saber mais a respeito.
