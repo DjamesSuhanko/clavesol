@@ -1,2 +1,2 @@
-Title: MSA - Método Simplificado de Aprendizagem
-Description: Lições de solfejo do MSA
+Title: MSA do GEM
+Description: Lições do solfejo do Método Simplificado de Aprendizagem
