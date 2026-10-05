@@ -15,5 +15,5 @@ Porém, a Play Store não deixa publicar direto em produção sem passar por 14 
 
 O preço dele é 19,90. Se você não pegar de graça agora que sou obrigado a testar, não adianta chorar depois!
 
-![MyLuthier]({{BASE}}/assets/myluthierPequeno.webp.webp)
+![MyLuthier]({{BASE}}/assets/myluthierPequeno.webp)
 
