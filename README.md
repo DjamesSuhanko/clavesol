@@ -84,3 +84,12 @@ O build inclui Open Graph, Twitter Cards, URLs canônicas e dados estruturados
 em cada página, além de gerar `sitemap.xml` e `robots.txt`. Artigos usam seus
 campos `Title`, `Description` e `Image`; `SocialImage` permite uma capa exclusiva
 para compartilhamento. Veja [o guia de SEO](docs/SEO.md).
+
+
+## Instalar como aplicativo
+
+A navegação contém **Instalar app**. Em navegadores com `beforeinstallprompt`, o botão abre a confirmação nativa após o clique; nos demais, apresenta instruções de instalação. A opção fica oculta quando o site já está aberto no modo aplicativo. Manifesto e ícones são copiados pelo build, com URLs relativas que funcionam na raiz ou em `/clavesol/`. É necessário publicar em HTTPS (localhost também serve para desenvolvimento). A instalação mantém o funcionamento online do site; não foi adicionado cache offline nem service worker.
+
+Teste da interação: `node tests/install-app.test.mjs`.
+
+Nos artigos, o índice passa para cima do texto em telas de até 1050 px, e tabelas largas têm rolagem horizontal própria.
