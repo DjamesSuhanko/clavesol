@@ -88,8 +88,6 @@ para compartilhamento. Veja [o guia de SEO](docs/SEO.md).
 
 ## Instalar como aplicativo
 
-A navegação contém **Instalar app**. Em navegadores com `beforeinstallprompt`, o botão abre a confirmação nativa após o clique; nos demais, apresenta instruções de instalação. A opção fica oculta quando o site já está aberto no modo aplicativo. Manifesto e ícones são copiados pelo build, com URLs relativas que funcionam na raiz ou em `/clavesol/`. É necessário publicar em HTTPS (localhost também serve para desenvolvimento). A instalação mantém o funcionamento online do site; não foi adicionado cache offline nem service worker.
-
-Teste da interação: `node tests/install-app.test.mjs`.
+O site fornece manifesto e ícones para a instalação pela interface nativa do navegador, sem botão ou diálogo na página e sem interceptar `beforeinstallprompt`. A disponibilidade e a apresentação da opção são controladas pelo navegador. As URLs relativas funcionam na raiz ou em `/clavesol/`. É necessário HTTPS (localhost também serve para desenvolvimento). O funcionamento continua online, sem cache offline.
 
 Nos artigos, o índice passa para cima do texto em telas de até 1050 px, e tabelas largas têm rolagem horizontal própria.
