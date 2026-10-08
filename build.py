@@ -11,6 +11,7 @@ from rhythm_page import exercise_card, exercise_body
 from equivalence_page import equivalence_card, equivalence_body
 from scales_page import scales_card, scales_body
 from signatures_page import signatures_card, signatures_body
+from reading_page import reading_card, reading_body
 ROOT=Path(__file__).parent; OUT=ROOT/'dist'; BASE=os.environ.get('BASE_PATH','').rstrip('/')
 catalog = load_catalog(ROOT)
 if OUT.exists(): shutil.rmtree(OUT)
@@ -52,6 +53,7 @@ save('gem/exercicio-de-compasso','Exercício de Compasso',exercise_body(BASE))
 save('gem/correspondencia-de-valores','Correspondência de Valores',equivalence_body(BASE))
 save('gem/escalas-maiores','Escalas Maiores',scales_body(BASE))
 save('gem/armaduras-de-clave','Armaduras de Clave',signatures_body(BASE))
+save('gem/treinador-de-leitura','Treinador de leitura',reading_body(BASE))
 for key,(name,subtitle,desc) in cats.items():
  matches=articles if key=='artigos' else [a for a in articles if a['category']==key]
  extra=''
@@ -60,7 +62,7 @@ for key,(name,subtitle,desc) in cats.items():
  if key=='tutoriais':extra+='<div class="video-panel"><span class="video-symbol" aria-hidden="true">▷</span><div><p class="eyebrow">PARA VER E PRATICAR</p><h2>MuseScore em vídeo</h2><p>Tutoriais oficiais para começar a escrever partituras e explorar o programa. Conteúdo em inglês.</p><a class="button" href="https://musescore.org/en/tutorials">Assistir aos tutoriais oficiais</a></div></div>'
  listing='<div class="cards">'+''.join(card(a) for a in matches)+'</div>'
  if key=='gem':
-  tools=calculator_card(BASE)+exercise_card(BASE)+equivalence_card(BASE)+scales_card(BASE)+signatures_card(BASE)
+  tools=reading_card(BASE)+calculator_card(BASE)+exercise_card(BASE)+equivalence_card(BASE)+scales_card(BASE)+signatures_card(BASE)
   listing=f'<section class="gem-region" aria-labelledby="gem-tools"><div class="section-heading"><div><p class="eyebrow">APRENDER FAZENDO</p><h2 id="gem-tools">Ferramentas e exercícios</h2></div></div><div class="cards">{tools}</div></section><section class="gem-region" aria-labelledby="gem-articles"><div class="section-heading"><div><p class="eyebrow">PARA LER E APROFUNDAR</p><h2 id="gem-articles">Artigos do GEM</h2></div></div>{listing}</section>'
  save(key,name,f'<section class="category-page"><p class="eyebrow">CLAVE SOL / {name.upper()}</p><h1>{subtitle}<span>.</span></h1><p class="lead">{desc}</p>{listing}{extra}</section>')
 external_hymns = json.loads((ROOT/'external_hymns.json').read_text())
