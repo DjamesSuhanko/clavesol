@@ -46,3 +46,5 @@
     overflow: visible;
   }
 }
+
+.player-options button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
