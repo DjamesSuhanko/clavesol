@@ -1,4 +1,5 @@
 from list_search import add_search
+from apps_catalog import apps_body
 from pathlib import Path
 import os,shutil,html,json
 import markdown
@@ -30,7 +31,9 @@ E=html.escape
 cats={'gem':('GEM','Grupo de Ensino Musical','Fundamentos, leitura e prática para aprender em conjunto.'),'artigos':('Artigos','Tudo sobre música','Ideias e ferramentas para a música na orquestra e em casa.'),'luthier':('Luthier','Serviços de luthier','O cuidado com o instrumento também faz parte da música.'),'links':('Links','Aplicativos musicais','Ferramentas para escrever, ouvir e compreender o som.'),'tutoriais':('Tutoriais','Dicas e técnicas','Um passo de cada vez. Mais confiança a cada ensaio.')}
 def page(title,body):
  body=add_search(body,BASE)
- nav=''.join(f'<a href="{BASE}/{k}/">{v[0]}</a>' for k,v in cats.items())
+ navitems = list(cats.items())
+ navitems.insert(1, ('apps', ('Apps',)))
+ nav=''.join(f'<a href="{BASE}/{k}/">{v[0]}</a>' for k,v in navitems)
  return f'''<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Clave Sol: partituras, ensino musical, artigos, luthier e aplicativos para a orquestra e para casa."><meta name="theme-color" content="#123b35"><title>{E(title)} · Clave Sol</title><link rel="icon" href="{BASE}/assets/icon.svg"><link rel="stylesheet" href="{BASE}/assets/style.css"><link rel="manifest" href="{BASE}/app.webmanifest"><link rel="apple-touch-icon" href="{BASE}/assets/app-icon-192.png"><script defer src="{BASE}/assets/pwa.js"></script></head><body><a class="skip" href="#conteudo">Pular para o conteúdo</a><div class="topline">MÚSICA PARA APRENDER, PRATICAR E COMPARTILHAR</div><header><a class="brand" href="{BASE}/"><img class="brand-logo" src="{BASE}/assets/logo-clavesol.webp" alt="" width="70" height="80"><span>Clave Sol<small>UM ENCONTRO COM A MÚSICA</small></span></a><nav aria-label="Principal">{nav}<a class="nav-score" href="{BASE}/partituras/">Partituras</a></nav></header><main id="conteudo">{body}</main><footer><a class="brand" href="{BASE}/"><img class="brand-logo" src="{BASE}/assets/logo-clavesol.webp" alt="" width="70" height="80"><span>Clave Sol<small>APRENDER. TOCAR. COMPARTILHAR.</small></span></a><p>Da primeira nota ao próximo ensaio.<br>Um espaço musical de Djames Suhanko.</p><a class="social-link" href="https://www.youtube.com/@ClaveSolMusic"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><rect x="1" y="4" width="22" height="16" rx="5" fill="currentColor"/><path d="M10 8l6 4-6 4z" fill="var(--paper)"/></svg><span>Clave Sol Music<small>Nosso canal no YouTube</small></span></a></footer><script defer src="{BASE}/assets/updates.js" data-version="__CLAVESOL_VERSION__" data-manifest="{BASE}/version.json"></script></body></html>'''
 def save(route,title,body):
  target=OUT/route; target.mkdir(parents=True,exist_ok=True);(target/'index.html').write_text(page(title,body))
@@ -48,6 +51,7 @@ body=f'''<section class="hero"><div class="hero-copy"><p class="eyebrow">SEU ESP
 save('', 'Partituras, aprendizado e inspiração',body)
 for a in articles:
  save('artigos/'+a['slug'],a['title'],f'<section class="article-layout"><a class="text-link" href="{BASE}/{a["category"]}/">{cats[a["category"]][0]}</a><p class="eyebrow">CADERNO CLAVE SOL</p><h1>{E(a["title"])}</h1><p class="lead">{E(a["description"])}</p><div class="article-grid"><article class="prose">{a["content"].replace("{{BASE}}",BASE)}</article><aside><h2>Nesta leitura</h2>{a["toc"]}<a href="{BASE}/partituras/">Estante de partituras</a></aside></div></section>')
+save('apps', 'Apps', apps_body(ROOT, BASE))
 save('gem/calculadora-de-compasso','Calculadora de Compasso',calculator_body(BASE))
 save('gem/exercicio-de-compasso','Exercício de Compasso',exercise_body(BASE))
 save('gem/correspondencia-de-valores','Correspondência de Valores',equivalence_body(BASE))
@@ -80,6 +84,7 @@ for old, new in page_aliases.items():
 (OUT/'.nojekyll').touch();print(f'{len(list(OUT.rglob("*.html")))} páginas geradas em {OUT}')
 
 seo_metadata = {'artigos/' + a['slug']: {**a, 'type': 'article'} for a in articles}
+seo_metadata['apps'] = {'description': 'Aplicativos Clave Sol para estudar, praticar e cuidar dos instrumentos.'}
 seo_metadata.update({key: {'description': values[2]} for key, values in cats.items()})
 seo_metadata.update({'partituras/' + key: {'description': group.description} for key, group in catalog.groups.items()})
 seo_metadata.update({score.route: {'description': score.description} for score in catalog.scores})

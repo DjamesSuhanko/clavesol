@@ -91,3 +91,7 @@ para compartilhamento. Veja [o guia de SEO](docs/SEO.md).
 O site fornece manifesto e ícones para a instalação pela interface nativa do navegador, sem botão ou diálogo na página e sem interceptar `beforeinstallprompt`. A disponibilidade e a apresentação da opção são controladas pelo navegador. As URLs relativas funcionam na raiz ou em `/clavesol/`. É necessário HTTPS (localhost também serve para desenvolvimento). Um service worker com tratamento de navegação mantém as requisições online e apresenta uma página de aviso quando não há conexão. Não armazena artigos nem interfere no versionamento existente. A minibarra nativa do Chrome Android depende também dos critérios do navegador, do histórico de dispensa e de instalação; testes de desktop não comprovam sua exibição no celular.
 
 Nos artigos, o índice passa para cima do texto em telas de até 1050 px, e tabelas largas têm rolagem horizontal própria.
+
+## Apps e sites de aplicativos
+
+A seção Apps usa `apps.json`. Cadastre cards com `criar_app.py` e prepare sites independentes com `criar_site_app.py`. Veja os parâmetros, exemplos e a configuração do GitHub Pages no [guia de Apps e subdomínios](docs/APPS-E-SUBDOMINIOS.md).

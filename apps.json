@@ -1,0 +1,23 @@
+[
+  {
+    "slug": "musicool",
+    "title": "Musicool",
+    "description": "Ferramentas musicais para apoiar seus estudos e sua prática.",
+    "image": "Musicoolarticle.webp",
+    "url": "https://musicool.clavesol.com.br/"
+  },
+  {
+    "slug": "myluthier",
+    "title": "MyLuthier",
+    "description": "Ferramentas para músicos e luthiers, com análise sonora e acompanhamento do instrumento.",
+    "image": "myluthier.webp",
+    "url": "http://myluthier.clavesol.com.br/"
+  },
+  {
+    "slug": "cantuscaeli",
+    "title": "CantusCaeli",
+    "description": "Hinário digital para acompanhar e praticar os hinos.",
+    "image": "cantuscaeli-capa.webp",
+    "url": "https://cantuscaeli.clavesol.com.br/"
+  }
+]
