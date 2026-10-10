@@ -2,21 +2,21 @@
   {
     "slug": "musicool",
     "title": "Musicool",
-    "description": "Ferramentas musicais para apoiar seus estudos e sua prática.",
+    "description": "Para músicos: Afinador, notas, metrônomo e mais.",
     "image": "Musicoolarticle.webp",
     "url": "https://musicool.clavesol.com.br/"
   },
   {
     "slug": "myluthier",
     "title": "MyLuthier",
-    "description": "Ferramentas para músicos e luthiers, com análise sonora e acompanhamento do instrumento.",
+    "description": "Treino de embocadura, arcada e relatório de afinação do instrumento.",
     "image": "myluthier.webp",
     "url": "http://myluthier.clavesol.com.br/"
   },
   {
     "slug": "cantuscaeli",
     "title": "CantusCaeli",
-    "description": "Hinário digital para acompanhar e praticar os hinos.",
+    "description": "Hinário digital com player para visitas e cultos sem músicos.",
     "image": "cantuscaeli-capa.webp",
     "url": "https://cantuscaeli.clavesol.com.br/"
   }
