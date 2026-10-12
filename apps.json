@@ -19,5 +19,12 @@
     "description": "Hinário digital com player para visitas e cultos sem músicos.",
     "image": "cantuscaeli-capa.webp",
     "url": "https://cantuscaeli.clavesol.com.br/"
+  },
+  {
+    "slug": "emet-biblia-digital",
+    "title": "Emet - Bíblia Digital",
+    "description": "Uma bíblia digital sem propagandas, para não atrapalhar a comunhão.",
+    "image": "emet-capa.webp",
+    "url": "https://emet.clavesol.com.br"
   }
 ]

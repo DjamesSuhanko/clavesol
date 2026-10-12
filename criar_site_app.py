@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Prepara um site Clave Sol independente; opcionalmente cria o repositório e configura Pages."""
 import argparse
-from html import escape
 import json
 from pathlib import Path
 import re
@@ -22,8 +21,8 @@ def main():
     parser.add_argument('--autor', default='Djames Suhanko')
     parser.add_argument('--diretorio', type=Path, required=True, help='Pasta nova para o repositório')
     parser.add_argument('--imagem', type=Path, help='Logo/capa PNG, JPEG ou WebP; padrão: logo Clave Sol')
-    parser.add_argument('--conteudo-html', type=Path, help='Fragmento HTML adicional para a página inicial')
-    parser.add_argument('--politica-html', type=Path, help='Política HTML; documento com main ou fragmento contendo um h1')
+    parser.add_argument('--conteudo-md', type=Path, help='Texto de apresentacao.md, exibido entre o topo e os blocos de privacidade/contato')
+    parser.add_argument('--politica-md', type=Path, help='Política Markdown contendo um título #')
     parser.add_argument('--github', action='store_true', help='Criar repositório público, enviar e configurar Pages; não aciona deploy')
     parser.add_argument('--retomar-github', action='store_true', help='Retomar apenas criação/envio/configuração da pasta já gerada')
     args = parser.parse_args()
@@ -47,26 +46,31 @@ def main():
             image = args.imagem.expanduser().resolve(strict=True) if args.imagem else ROOT / 'templates/app-site/assets/logo-clavesol.webp'
             if image.suffix.lower() not in ('.webp', '.png', '.jpg', '.jpeg'):
                 raise ValueError('Imagem deve ser WebP, PNG ou JPEG.')
-            home = args.conteudo_html.expanduser().read_text() if args.conteudo_html else '<p>Mais informações sobre o aplicativo serão disponibilizadas aqui.</p>'
-            privacy = '<h1>Política de privacidade</h1><p>A política de privacidade deste aplicativo será disponibilizada em breve.</p>'
-            if args.politica_html:
-                privacy = args.politica_html.expanduser().read_text()
-                main_content = re.search(r'<main\b[^>]*>(.*?)</main>', privacy, re.S | re.I)
-                if main_content:
-                    privacy = main_content[1]
-                if re.search(r'<(?:html|body)\b', privacy, re.I) or len(re.findall(r'<h1\b', privacy, re.I)) != 1:
-                    raise ValueError('Forneça um fragmento HTML com um h1 ou documento com esse conteúdo dentro de main.')
+            # Check the build dependency before creating the destination folder.
+            import markdown
+            home = args.conteudo_md.expanduser().read_text() if args.conteudo_md else ''
+            privacy = '# Política de privacidade\n\nA política de privacidade deste aplicativo será disponibilizada em breve.\n'
+            if args.politica_md:
+                privacy = args.politica_md.expanduser().read_text()
+                if len(re.findall(r'<h1[ >]', markdown.markdown(privacy))) != 1:
+                    raise ValueError('Forneça uma política Markdown com um único título #.')
+            if re.search(r'<h1[ >]', markdown.markdown(home)):
+                raise ValueError('O conteúdo inicial deve usar títulos ## ou inferiores; o título principal vem de --titulo.')
+            if any('\n' in value or '\r' in value for value in (args.titulo, args.texto)):
+                raise ValueError('Título e descrição devem ocupar uma única linha.')
             shutil.copytree(ROOT / 'templates/app-site', destination, ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
             logo = 'app-logo' + image.suffix.lower()
             shutil.copyfile(image, destination / 'assets' / logo)
-            config = dict(repository=args.repositorio, domain=args.dominio, title=args.titulo, description=args.texto, author=args.autor, email=args.email, logo=logo, privacy_ready=bool(args.politica_html))
+            config = dict(repository=args.repositorio, domain=args.dominio, title=args.titulo, description=args.texto, author=args.autor, email=args.email, logo=logo, privacy_ready=bool(args.politica_md))
             (destination / 'site.json').write_text(json.dumps(config, ensure_ascii=False, indent=2) + '\n')
             (destination / 'CNAME').write_text(args.dominio + '\n')
-            (destination / '.gitignore').write_text('dist/\n__pycache__/\n*.pyc\n')
+            (destination / '.gitignore').write_text('dist/\n.venv/\n__pycache__/\n*.pyc\n')
             (destination / 'content').mkdir()
-            (destination / 'content/home.html').write_text(home)
-            (destination / 'content/privacy.html').write_text(privacy)
-            (destination / 'README.md').write_text(f'# {args.titulo}\n\nSite público Clave Sol: https://{args.dominio}/\n\nEdite `site.json`, `content/home.html` e `content/privacy.html`. Ao fornecer a política definitiva, marque `privacy_ready` como `true` em `site.json`.\n\nGerar: `python3 build.py`\n\nVisualizar: `python3 -m http.server 8000 --directory dist`\n\nPublicação: Actions → Publicar aplicativo → Run workflow. O primeiro commit usa `[skip ci]`; pushes posteriores em main publicam automaticamente.\n\nDNS: CNAME do subdomínio apontando para `{args.repositorio.split("/")[0].lower()}.github.io` (somente DNS). Em Settings → Pages, habilite Enforce HTTPS quando o certificado estiver pronto.\n\nPublique apenas conteúdo público. Nunca inclua chaves de assinatura, credenciais ou dados de usuários.\n')
+            (destination / 'content/index.md').write_text(f'Title: {args.titulo}\nDescription: {args.texto}\nImage: {logo}\n\n## Seus dados no aplicativo\n\nConsulte a política de privacidade do aplicativo.\n\n[Ler a política de privacidade →]({{{{BASE}}}}/privacidade/)\n\n## Fale com o desenvolvedor\n\nUm canal para dúvidas e solicitações.\n\n[Ver informações de contato →]({{{{BASE}}}}/contato/)\n')
+            (destination / 'content/apresentacao.md').write_text(home)
+            (destination / 'content/privacy.md').write_text(privacy)
+            (destination / 'content/contact.md').write_text(f'# Contato\n\n## {args.autor}\n\n[{args.email}](mailto:{args.email})\n')
+            (destination / 'README.md').write_text(f'# {args.titulo}\n\nSite público Clave Sol: https://{args.dominio}/\n\nEscreva a apresentação em `content/apresentacao.md`. Edite também `site.json`, `content/index.md`, `content/privacy.md` e `content/contact.md`. Ao fornecer a política definitiva, marque `privacy_ready` como `true` em `site.json`.\n\nInstalar dependência: `python3 -m pip install -r requirements.txt`\n\nGerar: `python3 build.py`\n\nVisualizar: `python3 -m http.server 8000 --directory dist`\n\nPublicação: Actions → Publicar aplicativo → Run workflow. O primeiro commit usa `[skip ci]`; pushes posteriores em main publicam automaticamente.\n\nDNS: CNAME do subdomínio apontando para `{args.repositorio.split("/")[0].lower()}.github.io` (somente DNS). Em Settings → Pages, habilite Enforce HTTPS quando o certificado estiver pronto.\n\nPublique apenas conteúdo público. Nunca inclua chaves de assinatura, credenciais ou dados de usuários.\n')
             run(sys.executable, 'build.py', cwd=destination)
             run('git', 'init', '-b', 'main', cwd=destination)
         if args.github or args.retomar_github:
@@ -99,7 +103,7 @@ def main():
             run('gh', 'api', '--method', 'PUT', endpoint, '-f', 'cname=' + args.dominio)
             print('GitHub Pages configurado. Execute Actions → Publicar aplicativo → Run workflow.')
         print('Pronto:', destination)
-    except (OSError, ValueError, subprocess.CalledProcessError) as error:
+    except (OSError, ValueError, ImportError, subprocess.CalledProcessError) as error:
         parser.exit(1, f'Erro: {error}\nArquivos já gerados são preservados. Se a falha foi no GitHub, use --retomar-github com os mesmos parâmetros.\n')
 
 if __name__ == '__main__':

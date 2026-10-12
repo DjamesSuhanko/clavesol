@@ -5,6 +5,7 @@ from string import Template
 from html import escape as E
 import json
 import shutil
+from content_markdown import read_markdown, render_home
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / 'dist'
 
@@ -19,10 +20,9 @@ def build():
     app, author, email, description = (E(config[key], quote=True) for key in ('title', 'author', 'email', 'description'))
     origin = 'https://' + config['domain']
     template = Template((ROOT / 'templates/base.html').read_text())
-    home = f'<section class="hero"><div><p class="eyebrow">Aplicativos Clave Sol</p><h1>{app}</h1><p class="lead">{description}</p><div class="actions"><a class="button" href="/privacidade/">Política de privacidade</a><a class="text-link" href="/contato/">Entrar em contato</a></div></div><img class="hero-logo" src="/assets/{E(config["logo"])}" alt="{app}" width="300" height="300"></section>'
-    home += '<section class="article">' + (ROOT / 'content/home.html').read_text() + '</section>'
-    privacy = '<article class="article">' + (ROOT / 'content/privacy.html').read_text() + '</article>'
-    contact = f'<article class="article contact"><p class="eyebrow">{app} · Clave Sol</p><h1>Contato</h1><h2>{author}</h2><p><a class="contact-mail" href="mailto:{email}">{email}</a></p></article>'
+    home = render_home(ROOT / 'content/index.md')
+    privacy = '<article class="article">' + read_markdown(ROOT / 'content/privacy.md')[1] + '</article>'
+    contact = '<article class="article contact">' + read_markdown(ROOT / 'content/contact.md')[1] + '</article>'
     pages = [('/', config['title'], home), ('/privacidade/', 'Política de privacidade', privacy), ('/contato/', 'Contato', contact), ('/404.html', 'Página não encontrada', '<article class="article"><h1>Página não encontrada</h1><a href="/">Voltar ao início</a></article>')]
     for route, title, body in pages:
         nav = ''.join(f'<a href="{url}"' + (' aria-current="page"' if url == route else '') + f'>{label}</a>' for url, label in [('/', app), ('/privacidade/', 'Privacidade'), ('/contato/', 'Contato')])

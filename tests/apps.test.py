@@ -43,16 +43,29 @@ class AppsTests(unittest.TestCase):
         self.assertEqual(catalog.read_bytes(), original)
 
     def test_site_generation_preserves_policy_and_links(self):
-        policy = self.root / 'policy.html'
-        fragment = '<h1>Privacidade</h1><p>Texto fornecido &amp; preservado.</p>'
-        policy.write_text('<html><body><main>' + fragment + '</main></body></html>')
+        policy = self.root / 'policy.md'
+        fragment = '# Privacidade\n\nTexto fornecido & preservado.\n'
+        policy.write_text(fragment)
+        body = self.root / 'intro.md'
+        body.write_text('Texto de apresentação com **destaque**.\n\n## Recursos\n\n- Primeiro recurso\n- Segundo recurso\n\n![Tela]({{BASE}}/assets/logo-clavesol.webp)\n')
         site = self.root / 'new-site'
-        args = ['--repositorio', 'example/new-app', '--diretorio', site, '--dominio', 'app.example.com', '--titulo', 'App <&>', '--texto', 'Estudo & prática', '--email', 'dev@example.com', '--politica-html', policy]
+        args = ['--repositorio', 'example/new-app', '--diretorio', site, '--dominio', 'app.example.com', '--titulo', 'App <&>', '--texto', 'Estudo & prática', '--email', 'dev@example.com', '--politica-md', policy, '--conteudo-md', body]
         self.run_cli('criar_site_app.py', *args)
-        self.assertEqual((site / 'content/privacy.html').read_text(), fragment)
+        self.assertEqual((site / 'content/privacy.md').read_text(), fragment)
         self.assertEqual((site / 'CNAME').read_text(), 'app.example.com\n')
         self.assertIn('App &lt;&amp;&gt;', (site / 'dist/index.html').read_text())
         self.assertFalse((site / 'dist/site.json').exists())
+        rendered = (site / 'dist/index.html').read_text()
+        self.assertIn('<strong>destaque</strong>', rendered)
+        self.assertIn('<h2>Recursos</h2>', rendered)
+        presentation = rendered.split('aria-label="Sobre o aplicativo">', 1)[1].split('</section>', 1)[0]
+        self.assertIn('<h2>Recursos</h2>', presentation)
+        self.assertLess(rendered.index('app-presentation'), rendered.index('class="public-links"'))
+        self.assertIn('Seus dados no aplicativo', rendered)
+        self.assertIn('Fale com o desenvolvedor', rendered)
+        self.assertEqual((site / 'content/apresentacao.md').read_text(), body.read_text())
+        self.assertIn('<li>Primeiro recurso</li>', rendered)
+        self.assertIn('src="/assets/logo-clavesol.webp"', rendered)
         dist = site / 'dist'
         testcase = self
         class Links(HTMLParser):
@@ -67,7 +80,7 @@ class AppsTests(unittest.TestCase):
         for path in dist.rglob('*.html'):
             Links().feed(path.read_text())
         self.run_cli('criar_site_app.py', *args, ok=False)
-        self.assertEqual((site / 'content/privacy.html').read_text(), fragment)
+        self.assertEqual((site / 'content/privacy.md').read_text(), fragment)
 
 if __name__ == '__main__':
     unittest.main()

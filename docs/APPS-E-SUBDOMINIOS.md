@@ -31,7 +31,7 @@ Nenhum commit ou push é feito pelo script de cards.
 
 ## Criar o site e o repositório de um app
 
-`criar_site_app.py` usa o modelo versionado em `templates/app-site/`, com o visual creme, verde e dourado do ClaveSol. Gera página inicial, contato, privacidade, alias `/privacy.html`, 404, sitemap, CNAME e workflow do GitHub Pages. Só `dist/` é publicado. O build do novo site usa somente a biblioteca padrão do Python 3.10 ou mais recente.
+`criar_site_app.py` usa o modelo versionado em `templates/app-site/`, com o visual creme, verde e dourado do ClaveSol. Gera página inicial, contato, privacidade, alias `/privacy.html`, 404, sitemap, CNAME e workflow do GitHub Pages. Só `dist/` é publicado. O build do novo site usa Python 3.10 ou mais recente e Markdown (`pip install -r requirements.txt`).
 
 Preparação local, sem criar nada no GitHub:
 
@@ -45,12 +45,14 @@ python3 criar_site_app.py \
   --autor 'Djames Suhanko' \
   --email 'djames.suhanko@gmail.com' \
   --imagem '/caminho/completo/logo.webp' \
-  --politica-html '/caminho/completo/politica.html'
+  --politica-md '/caminho/completo/politica.md'
 ```
 
-A pasta de destino deve ser nova. `--autor`, `--imagem` e `--politica-html` são opcionais. Sem imagem, usa o logo ClaveSol. Sem política, cria uma página identificada como pendente, sem inventar declarações sobre privacidade. Antes de divulgar essa URL como política definitiva, substitua o conteúdo e marque `privacy_ready: true` em `site.json`.
+A pasta de destino deve ser nova. `--autor`, `--imagem` e `--politica-md` são opcionais. Sem imagem, usa o logo ClaveSol. Sem política, cria uma página identificada como pendente, sem inventar declarações sobre privacidade. Antes de divulgar essa URL como política definitiva, substitua o conteúdo e marque `privacy_ready: true` em `site.json`.
 
-A política pode ser um fragmento com um único `<h1>` ou um documento HTML com o conteúdo dentro de `<main>`. O texto fornecido é preservado. `--conteudo-html arquivo.html` acrescenta um fragmento à apresentação inicial; use títulos de nível h2 ou inferior nesse trecho. Estes arquivos HTML são conteúdo editorial de confiança, não são sanitizados.
+A política deve ser Markdown com um único título `#`. O texto fornecido é preservado. `--conteudo-md arquivo.md` fornece o texto de `content/apresentacao.md`, exibido entre o topo e os blocos de privacidade/contato: escreva parágrafos, listas, imagens e títulos `##` ou inferiores. O script coloca título, descrição e imagem nos campos do início de `content/index.md`. O contato também fica em `content/contact.md`. Veja `EDITAR-CONTEUDO.md` no site gerado.
+
+Execute o criador com o ambiente do blog (`.venv/bin/python criar_site_app.py ...`), que já contém Markdown, ou instale antes `requirements.txt`.
 
 Para criar **também o repositório público**, enviar o commit inicial e configurar Pages, adicione `--github` ao comando de geração. Requer `git`, GitHub CLI (`gh`) autenticado (`gh auth login`) e permissão de criação no dono informado. Uma identidade git já configurada é preservada; se faltar, o autor/email informados são configurados apenas nesse novo repositório.
 
@@ -65,10 +67,11 @@ O commit inicial contém `[skip ci]`: o primeiro deploy fica para você. Depois 
 
 O script não altera a Cloudflare, não dispara workflow e não acompanha a publicação. Pushes posteriores em `main` publicam automaticamente.
 
-No novo repositório, edite `site.json` para título, descrição, autor e email; `content/home.html` para apresentação; e `content/privacy.html` para a política. Para mudar o domínio depois, atualize `site.json`, CNAME, Pages e DNS em conjunto.
+No novo repositório, edite `site.json` para título, descrição, autor e email; `content/apresentacao.md` para apresentação; e `content/privacy.md` para a política. Para mudar o domínio depois, atualize `site.json`, CNAME, Pages e DNS em conjunto.
 
 ```bash
 cd /home/djames/Documents/meu-app
+python3 -m pip install -r requirements.txt
 python3 build.py
 python3 -m http.server 8000 --directory dist
 ```
