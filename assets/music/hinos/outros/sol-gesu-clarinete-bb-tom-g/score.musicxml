@@ -9,7 +9,7 @@
     <creator type="composer">Geo. C. Hugg</creator>
     <encoding>
       <software>MuseScore Studio 4.7.5</software>
-      <encoding-date>2026-10-20</encoding-date>
+      <encoding-date>2026-10-21</encoding-date>
       <supports element="accidental" type="yes"/>
       <supports element="beam" type="yes"/>
       <supports element="print" attribute="new-page" type="yes" value="yes"/>
@@ -138,10 +138,10 @@
         <direction-type>
           <metronome parentheses="no" default-x="-37.68" relative-x="-52.45" relative-y="31.09">
             <beat-unit>half</beat-unit>
-            <per-minute>40</per-minute>
+            <per-minute>50</per-minute>
             </metronome>
           </direction-type>
-        <sound tempo="80"/>
+        <sound tempo="100"/>
         </direction>
       <note default-x="99.29" default-y="-20">
         <pitch>
@@ -3899,7 +3899,7 @@
         <duration>4</duration>
         <voice>1</voice>
         <type>quarter</type>
-        <stem>down</stem>
+        <stem>up</stem>
         </note>
       <note default-x="80.43" default-y="-153.62">
         <pitch>
@@ -3909,7 +3909,7 @@
         <duration>4</duration>
         <voice>1</voice>
         <type>quarter</type>
-        <stem>down</stem>
+        <stem>up</stem>
         </note>
       <note default-x="148.36" default-y="-168.62">
         <pitch>
@@ -3922,10 +3922,10 @@
         <stem>up</stem>
         <beam number="1">begin</beam>
         </note>
-      <note default-x="182.32" default-y="-188.62">
+      <note default-x="182.32" default-y="-153.62">
         <pitch>
           <step>G</step>
-          <octave>4</octave>
+          <octave>5</octave>
           </pitch>
         <duration>2</duration>
         <voice>1</voice>
@@ -4002,9 +4002,9 @@
         <stem>down</stem>
         <beam number="1">end</beam>
         </note>
-      <note default-x="148.36" default-y="-188.62">
+      <note default-x="148.36" default-y="-203.62">
         <pitch>
-          <step>G</step>
+          <step>D</step>
           <octave>4</octave>
           </pitch>
         <duration>2</duration>
