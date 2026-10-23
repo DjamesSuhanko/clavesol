@@ -51,6 +51,58 @@ def concert_tpc(written_midi, letter, chromatic, diatonic, accidental):
     return TPC[dest]+alter*7
 
 
+def transpose_harmonies(staff, fifth_delta):
+    """MuseScore stores written root/bass as TPC; quality and extensions stay intact."""
+    for harmony in staff.iter('Harmony'):
+        info = harmony.find('harmonyInfo')
+        if info is None:
+            info = harmony  # Older MSCX versions store the same fields directly.
+        if info.find('root') is None:
+            if info.findtext('name', '').strip() in ('*', 'N.C.', 'N.C', 'NC'):
+                continue
+            raise ValueError('Cifra sem fundamental estruturada exige revisão manual')
+        for tag in ('root', 'base'):
+            node = info.find(tag)
+            if node is None:
+                continue
+            value = int(node.text)
+            if value == -2:  # MuseScore TPC_INVALID (no bass/root).
+                if tag == 'root':
+                    raise ValueError('Cifra com fundamental inválida')
+                continue
+            target = value + fifth_delta
+            if abs(spelling(value)[1]) > 2 or abs(spelling(target)[1]) > 2:
+                raise ValueError('Cifra requer acidente maior que duplo')
+            node.text = str(target)
+
+
+def sounding_harmonies(root):
+    """Comparable concert roots/basses and unchanged quality from real exports."""
+    result = []
+    for part in root.findall('part'):
+        chromatic = 0
+        chords = []
+        for element in part.iter():
+            if element.tag == 'transpose':
+                chromatic = int(element.findtext('chromatic', '0'))
+            if element.tag != 'harmony':
+                continue
+            pitches = []
+            for tag in ('root', 'bass'):
+                pitch = element.find(tag)
+                if pitch is None or element.findtext('kind') == 'none':
+                    pitches.append(None)
+                else:
+                    letter = pitch.findtext(tag + '-step')
+                    alter = int(pitch.findtext(tag + '-alter', '0'))
+                    pitches.append((NATURAL[LETTERS.index(letter)] + alter + chromatic) % 12)
+            quality = [(child.tag, [(e.tag, (e.text or '').strip(), sorted((k, v) for k, v in e.attrib.items() if k not in ('default-x', 'default-y', 'relative-x', 'relative-y'))) for e in child.iter()])
+                       for child in element if child.tag not in ('root', 'bass')]
+            chords.append((pitches, quality))
+        result.append(chords)
+    return result
+
+
 def transform(source, destination, voices, key):
     """Change written key; preserve concert pitches and concert key signatures."""
     with zipfile.ZipFile(source) as archive:
@@ -73,8 +125,8 @@ def transform(source, destination, voices, key):
             styles.append(ET.fromstring(content))
     if any(e.text == '1' for style in styles for e in style.iter('concertPitch')):
         raise ValueError('Desative som de concerto antes de ajustar a escrita')
-    if list(score.iter('InstrumentChange')) or any(h.findtext('harmonyInfo/name', h.findtext('name', '')).strip() != '*' for h in score.iter('Harmony')):
-        raise ValueError('Mudanças de instrumento/cifras harmônicas exigem revisão manual')
+    if list(score.iter('InstrumentChange')):
+        raise ValueError('Mudanças de instrumento exigem revisão manual')
     count = 0
     for si, (staff, part) in enumerate(zip(staves, parts)):
         if not voices & {si*2+1, si*2+2}:
@@ -112,6 +164,7 @@ def transform(source, destination, voices, key):
                 raise ValueError('Uma modulação excederia sete acidentes')
             put(ks, 'actualKey', target)
             # concertKey representa a tonalidade sonora e permanece intacta.
+        transpose_harmonies(staff, fifth_delta)
         for note in staff.iter('Note'):
             pitch = int(note.findtext('pitch'))
             written = pitch-chrom
@@ -156,6 +209,8 @@ def verify_sound(source, changed, directory, executable):
     for field in ('notes', 'duration', 'quarterBpm', 'fermatas', 'introEnd'):
         if results[0].get(field) != results[1].get(field):
             raise ValueError('Som não preservado na exportação: '+field+'; saída não será publicada')
+    if sounding_harmonies(xml_roots[0]) != sounding_harmonies(xml_roots[1]):
+        raise ValueError('Cifras sonoras divergiram na exportação; saída não será publicada')
     for tag in ('lyric', 'clef', 'time'):
         def values(root):
             return [[(e.tag, e.text.strip() if e.text else '', sorted((k,v) for k,v in e.attrib.items() if k not in ("default-x", "default-y", "relative-x", "relative-y"))) for e in node.iter()] for node in root.iter(tag)]
@@ -182,7 +237,8 @@ def main(argv=None):
     p.add_argument('--vozes', default='1,2,3,4', help='Pares completos: 1,2 ou 3,4; padrão todas')
     p.add_argument('--tonalidade', required=True, choices=KEYS, help='Nova tonalidade escrita inicial, preservando o som')
     p.add_argument('--to-site', action='store_true', help='Substitui assets cadastrados, exporta e gera dist; não faz commit/push')
-    p.add_argument('--musescore', default=str(Path.home()/'bin/musescore'))
+    p.add_argument('--musescore', default=str(Path.home()/'bin/musescore'), help='Caminho do executável MuseScore (não é o arquivo de saída)')
+    p.add_argument('--saida', type=Path, help='Arquivo MSCZ de saída; padrão FIX-<entrada>. Não sobrescreve arquivos.')
     args = p.parse_args(argv)
     try:
         voice_list = [int(v) for v in args.vozes.split(',')]
@@ -192,7 +248,11 @@ def main(argv=None):
         source = args.arquivo.expanduser().resolve(strict=True)
         if source.suffix.lower() != '.mscz':
             raise ValueError('Informe um arquivo .mscz')
-        destination = source.with_name('FIX-'+source.name)
+        if args.to_site and args.saida:
+            raise ValueError('--saida não pode ser combinado com --to-site')
+        destination = args.saida.expanduser().resolve() if args.saida else source.with_name('FIX-'+source.name)
+        if destination.suffix.lower() != '.mscz':
+            raise ValueError('A saída deve ter extensão .mscz')
         if not args.to_site and destination.exists():
             raise ValueError(f'Destino já existe; não será sobrescrito: {destination}')
         site = site_destination(source) if args.to_site else None

@@ -19,7 +19,8 @@ Cria `FIX-score.mscz` ao lado do original. Nunca sobrescreve a entrada nem uma s
 
 - `--tonalidade`: obrigatória; tonalidade **escrita inicial**, maior. Aceita Cb, Gb, Db, Ab, Eb, Bb, F, C, G, D, A, E, B, F# e C#. Modulações posteriores são deslocadas pelo mesmo intervalo, não apagadas.
 - `--vozes`: opcional, padrão `1,2,3,4`. Aceita os pares completos `1,2` (pentagrama superior) ou `3,4` (inferior), ou os quatro. Não aceita apenas uma voz, pois a compensação se aplica ao instrumento inteiro. Não precisa separar notas reunidas em acordes.
-- `--musescore`: executável; padrão `~/bin/musescore`.
+- `--musescore`: executável; padrão `~/bin/musescore`. Não é o nome do arquivo de saída.
+- `--saida`: caminho opcional do MSCZ de saída. Sem ele usa `FIX-<entrada>`. Não sobrescreve arquivos e não pode ser combinado com `--to-site`.
 - `--to-site`: exporta e substitui os assets cadastrados, conforme abaixo.
 
 **`--up` e `--down` foram removidos.** Eles permitiam alterar a música. Agora o intervalo é deduzido da armadura original e da desejada; usa o intervalo mais próximo, preservando a altura sonora. A origem e a saída são exportadas pelo MuseScore em área temporária e comparadas pelo mesmo parser usado no site. Não há opção para ignorar essa verificação. Se som, letra, compassos ou claves divergirem, a saída não é publicada.
@@ -51,7 +52,7 @@ Não executa comandos Git: revisão, commit e push ficam com o usuário. Se o bu
 
 ## Limites
 
-Suporta MSCZ com uma única partitura e SATB em dois pentagramas, cada um em um Part, e armadura inicial explícita. Rejeita seleção parcial de um par, som de concerto ativado, mudanças de instrumento, cifras harmônicas (exceto o asterisco de introdução), armaduras customizadas/atonais e transposições que excedam os limites de acidentes ou notas suportados. Não modifica nomes de notas em textos livres.
+Suporta MSCZ com uma única partitura e SATB em dois pentagramas, cada um em um Part, e armadura inicial explícita. Rejeita seleção parcial de um par, som de concerto ativado, mudanças de instrumento, cifras sem fundamental estruturada (exceto `*` e N.C.), armaduras customizadas/atonais e transposições que excedam os limites de acidentes ou notas suportados. Não modifica nomes de notas em textos livres.
 
 Alterar a escrita é diferente de corrigir notas que já soam erradas: este comando deliberadamente preserva o som original. O nome do instrumento no cadastro permanece; seus campos numéricos de transposição são os ajustados.
 
@@ -80,3 +81,21 @@ Para preparar uma cópia validada posteriormente, coloque-a na pasta cadastrada 
 ### Aplicação completa do lote ao site
 
 `aplicar_correcao_hinario_do.py --lote <pasta-do-lote> --trabalho <pasta-nova>` exporta os 479 hinos em cópia isolada do repositório, compara as sequências sonoras com o site atual, sincroniza SVGs/cursor, gera o build completo e só então aplica os assets/cadastros e `dist/`. O hino 52 é preservado. As origens devem corresponder aos hashes do lote; alterações concorrentes cancelam a aplicação. Backup durável em `<trabalho>/backup`; estado em `status.json`; log do build em `build.log`. Falhas de exportação/build não alteram o repositório; falhas durante a aplicação fazem rollback dos arquivos já substituídos. Não executa Git. Durante a fase final de aplicação, aguarde `status: concluido` antes de fazer commit.
+
+
+## Transpor cifras junto com as notas
+
+As cifras estruturadas do MuseScore acompanham o intervalo da escrita. O script transpõe a fundamental e o baixo de inversões (por exemplo, G7/B → F7/A), preservando qualidade, extensões e demais informações. Suporta tanto `harmonyInfo` das versões recentes quanto os campos diretos das versões antigas. Asteriscos de introdução e marcadores N.C. permanecem intactos. Cifras digitadas como texto livre não são adivinhadas: o script pede revisão manual.
+
+Na validação, os dois arquivos são exportados pelo MuseScore; além das notas, o programa compara as fundamentais e baixos em altura de concerto e a qualidade das cifras. Não há reprodução sonora durante o teste.
+
+Exemplo: escrita em Sol para Si♭ → escrita em Fá para Dó:
+
+```bash
+.venv/bin/python transpor_hinos.py \
+  ../sol-gesu-clarinete-Bb-tom-G-2026.mscz \
+  --tonalidade F \
+  --saida ../sol-gesu-C-tom-F.mscz
+```
+
+Nesse arquivo, o pentagrama superior passa de −2 para 0 semitons de transposição. O inferior, originalmente de clarinete baixo, passa de −14 para −12: conserva a oitava grave original. A escrita e as cifras ficam em Fá, mas o pentagrama inferior ainda soa uma oitava abaixo do escrito. O script conserva as claves e os nomes/timbres dos instrumentos; não converte automaticamente essa configuração de oitava em outra clave.
