@@ -61,6 +61,42 @@ class PreserveSound(unittest.TestCase):
             self.assertTrue(all(n.text=='0' for n in c.iter('actualKey')))
         self.assertEqual(hashlib.sha256(SOURCE.read_bytes()).digest(),digest)
 
+    def test_eb_alto_written_register(self):
+        # Build a small SATB source: concert F, written G for Bb instruments.
+        # The old shortest-interval rule chose G -> D down a fourth (+3 instrument).
+        source_xml = b'''<museScore version="4.60"><Score>
+          <Part><Staff id="1"/><Instrument><transposeChromatic>-2</transposeChromatic><transposeDiatonic>-1</transposeDiatonic></Instrument></Part>
+          <Part><Staff id="2"/><Instrument><transposeChromatic>-14</transposeChromatic><transposeDiatonic>-8</transposeDiatonic></Instrument></Part>
+          <Staff id="1"><Measure><voice><KeySig><concertKey>-1</concertKey><actualKey>1</actualKey></KeySig><Clef><concertClefType>G</concertClefType><transposingClefType>G</transposingClefType></Clef><Harmony><harmonyInfo><root>15</root><base>19</base><name>7</name></harmonyInfo></Harmony><Chord><durationType>whole</durationType><Note><pitch>55</pitch><tpc>15</tpc><tpc2>17</tpc2></Note></Chord></voice></Measure></Staff>
+          <Staff id="2"><Measure><voice><KeySig><concertKey>-1</concertKey><actualKey>1</actualKey></KeySig><Clef><concertClefType>G</concertClefType><transposingClefType>G</transposingClefType></Clef><Chord><durationType>whole</durationType><Note><pitch>43</pitch><tpc>15</tpc><tpc2>17</tpc2></Note></Chord></voice></Measure></Staff>
+          </Score></museScore>'''
+        with tempfile.TemporaryDirectory() as directory:
+            d=Path(directory);source=d/'source.mscz';out=d/'eb.mscz';again=d/'again.mscz'
+            with zipfile.ZipFile(source,'w') as z:z.writestr('score.mscx',source_xml)
+            transform(source,out,{1,2,3,4},'D')
+            before,after=read(source),read(out)
+            instruments=after.findall('./Score/Part/Instrument')
+            self.assertEqual([i.findtext('transposeChromatic') for i in instruments],['-9','-9'])
+            self.assertEqual([i.findtext('transposeDiatonic') for i in instruments],['-5','-5'])
+            for tag in ('pitch','tpc','Clef'):
+                self.assertEqual([ET.tostring(e) for e in before.iter(tag)],[ET.tostring(e) for e in after.iter(tag)])
+            # G3 concert -> E4 written for Eb, NOT E3 as in the regression.
+            first=after.find('./Score/Staff/Measure/voice/Chord/Note')
+            self.assertEqual(int(first.findtext('pitch'))-int(instruments[0].findtext('transposeChromatic')),64)
+            self.assertEqual(after.findtext('.//Harmony/harmonyInfo/root'),'16')  # G -> D
+            self.assertEqual(after.findtext('.//Harmony/harmonyInfo/base'),'20')  # B -> F#
+            # An old erroneous +3/+2 output must also be repairable at the same key.
+            old=read(out)
+            old_instr=old.find('./Score/Part/Instrument')
+            old_instr.find('transposeChromatic').text='3'
+            old_instr.find('transposeDiatonic').text='2'
+            legacy=d/'legacy.mscz'
+            with zipfile.ZipFile(legacy,'w') as z:z.writestr('score.mscx',ET.tostring(old))
+            transform(legacy,again,{1,2,3,4},'D')
+            self.assertEqual(ET.tostring(read(out)),ET.tostring(read(again)))
+            transform(out,again,{1,2,3,4},'D')
+            self.assertEqual(ET.tostring(read(out)),ET.tostring(read(again)))
+
     def test_pairs_and_idempotence(self):
         with tempfile.TemporaryDirectory() as directory:
             d=Path(directory); a=d/'a.mscz'; b=d/'b.mscz'; c=d/'c.mscz'

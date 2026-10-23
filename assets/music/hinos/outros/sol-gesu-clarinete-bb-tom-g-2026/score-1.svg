@@ -333,7 +333,7 @@
 <polyline class="Stem" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="5018.07,12571.4 5018.07,12377.9" />
 <polyline class="Stem" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="4702.1,9785.77 4702.1,9557.79" />
 <polyline class="Stem" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="5866.06,12695.4 5866.06,12502" />
-<polyline class="Stem" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="3356.07,12571.4 3356.07,12377.9" />
+<polyline class="Stem" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="3356.07,12736.8 3356.07,12522.6" />
 <polyline class="Stem" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="3825.26,7185.79 3825.26,6909.65" />
 <polyline class="Stem" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="1669.47,9827.11 1669.47,9592.31" />
 <polyline class="Stem" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="1652.88,12695.4 1652.88,12481.5" />
@@ -659,7 +659,7 @@
 <path class="Note" d="M8999.8,3765.35 C8988.88,3765.35 8986.55,3756.41 8986.55,3753.42 C8986.55,3737.21 9042.16,3708.74 9057.72,3708.74 C9065.66,3708.74 9070.96,3713.38 9070.96,3720.66 C9070.96,3737.21 9015.02,3765.35 8999.8,3765.35 M9045.47,3693.19 C9013.36,3693.19 8974.97,3720 8974.97,3750.78 C8974.97,3765.02 8985.24,3780.89 9012.05,3780.89 C9046.47,3780.89 9082.55,3752.77 9082.55,3723.64 C9082.55,3704.11 9065.99,3693.19 9045.47,3693.19"/>
 <path class="Note" d="M4838.19,3765.35 C4827.27,3765.35 4824.94,3756.41 4824.94,3753.42 C4824.94,3737.21 4880.55,3708.74 4896.11,3708.74 C4904.05,3708.74 4909.35,3713.38 4909.35,3720.66 C4909.35,3737.21 4853.41,3765.35 4838.19,3765.35 M4883.86,3693.19 C4851.75,3693.19 4813.36,3720 4813.36,3750.78 C4813.36,3765.02 4823.63,3780.89 4850.44,3780.89 C4884.86,3780.89 4920.94,3752.77 4920.94,3723.64 C4920.94,3704.11 4904.38,3693.19 4883.86,3693.19"/>
 <path class="Note" d="M2902.98,12887.9 C2902.98,12902.1 2913.25,12918 2940.06,12918 C2974.48,12918 3010.56,12889.9 3010.56,12860.8 C3010.56,12841.2 2994,12830.3 2973.48,12830.3 C2941.37,12830.3 2902.98,12857.5 2902.98,12887.9"/>
-<path class="Note" d="M3252.72,12598.5 C3252.72,12612.8 3262.99,12628.6 3289.8,12628.6 C3324.22,12628.6 3360.3,12600.5 3360.3,12571.4 C3360.3,12551.9 3343.74,12540.9 3323.22,12540.9 C3291.11,12540.9 3252.72,12568.1 3252.72,12598.5"/>
+<path class="Note" d="M3252.72,12763.9 C3252.72,12778.1 3262.99,12794 3289.8,12794 C3324.22,12794 3360.3,12765.9 3360.3,12736.7 C3360.3,12717.2 3343.74,12706.3 3323.22,12706.3 C3291.11,12706.3 3252.72,12733.4 3252.72,12763.9"/>
 <path class="Note" d="M5826.67,6964.9 C5826.67,6979.13 5836.94,6995.01 5863.75,6995.01 C5898.17,6995.01 5934.25,6966.88 5934.25,6937.76 C5934.25,6918.22 5917.69,6907.3 5897.17,6907.3 C5865.06,6907.3 5826.67,6934.44 5826.67,6964.9"/>
 <path class="Note" d="M3945.64,3916.14 C3945.64,3930.37 3955.9,3946.25 3982.72,3946.25 C4017.14,3946.25 4053.22,3918.12 4053.22,3889 C4053.22,3869.47 4036.65,3858.54 4016.14,3858.54 C3984.03,3858.54 3945.64,3885.69 3945.64,3916.14"/>
 <path class="Note" d="M7990.3,6964.9 C7990.3,6979.13 8000.57,6995.01 8027.38,6995.01 C8061.8,6995.01 8097.88,6966.88 8097.88,6937.76 C8097.88,6918.22 8081.32,6907.3 8060.8,6907.3 C8028.69,6907.3 7990.3,6934.44 7990.3,6964.9"/>
@@ -1038,11 +1038,11 @@
 <path class="Harmony" d="M2054.66,11127.8 L2054.66,11119.2 L2070.15,11119.2 L2070.15,11014.8 L2054.66,11014.8 L2054.66,11006.1 L2152.68,11006.1 L2152.68,11033.2 L2142.65,11033.2 L2142.65,11016.1 L2086.71,11016.1 L2086.71,11056.9 L2126.58,11056.9 L2126.58,11041.6 L2136.61,11041.6 L2136.61,11082.1 L2126.58,11082.1 L2126.58,11066.8 L2086.71,11066.8 L2086.71,11117.8 L2143.94,11117.8 L2143.94,11100.7 L2153.97,11100.7 L2153.97,11127.8 L2054.66,11127.8 "/>
 <path class="Harmony" d="M2258.25,11058 C2261.14,11051.7 2264.82,11046.9 2269.31,11043.6 C2273.79,11040.4 2279.03,11038.8 2285,11038.8 C2294.08,11038.8 2300.84,11041.6 2305.3,11047.2 C2309.76,11052.8 2311.99,11061.3 2311.99,11072.7 L2311.99,11119.2 L2325.54,11119.2 L2325.54,11127.8 L2283.94,11127.8 L2283.94,11119.2 L2296.99,11119.2 L2296.99,11074.4 C2296.99,11065.6 2295.68,11059.2 2293.07,11055.5 C2290.47,11051.7 2286.15,11049.9 2280.11,11049.9 C2273.43,11049.9 2268.33,11052.4 2264.82,11057.5 C2261.32,11062.5 2259.57,11069.9 2259.57,11079.5 L2259.57,11119.2 L2272.61,11119.2 L2272.61,11127.8 L2231.5,11127.8 L2231.5,11119.2 L2244.55,11119.2 L2244.55,11073.8 C2244.55,11065.2 2243.25,11059 2240.64,11055.4 C2238.03,11051.7 2233.71,11049.9 2227.68,11049.9 C2220.99,11049.9 2215.89,11052.4 2212.39,11057.5 C2208.88,11062.5 2207.13,11069.9 2207.13,11079.5 L2207.13,11119.2 L2220.18,11119.2 L2220.18,11127.8 L2178.58,11127.8 L2178.58,11119.2 L2192.13,11119.2 L2192.13,11049.7 L2177.77,11049.7 L2177.77,11041.1 L2207.13,11041.1 L2207.13,11056.6 C2209.9,11050.8 2213.43,11046.4 2217.73,11043.3 C2222.03,11040.3 2226.9,11038.8 2232.33,11038.8 C2239.07,11038.8 2244.7,11040.5 2249.21,11043.8 C2253.72,11047.1 2256.73,11051.9 2258.25,11058"/>
 <path class="Harmony" d="M7024.4,1718.94 L7039.55,1718.94 C7055.38,1718.94 7067.52,1714.42 7075.97,1705.4 C7084.42,1696.37 7088.65,1683.43 7088.65,1666.58 C7088.65,1649.73 7084.43,1636.85 7076.01,1627.94 C7067.58,1619.02 7055.43,1614.56 7039.55,1614.56 L7024.4,1614.56 L7024.4,1718.94 M6992.35,1727.58 L6992.35,1718.94 L7007.84,1718.94 L7007.84,1614.56 L6992.35,1614.56 L6992.35,1605.83 L7040.79,1605.83 C7061.77,1605.83 7078.11,1611.18 7089.83,1621.9 C7101.54,1632.61 7107.4,1647.5 7107.4,1666.58 C7107.4,1685.71 7101.53,1700.66 7089.79,1711.43 C7078.05,1722.19 7061.72,1727.58 7040.79,1727.58 L6992.35,1727.58 "/>
+<polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="1985.24,3235.65 2023.19,3235.65" />
+<polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="2228.59,3035.25 2278.19,3035.25" />
+<polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="2247.59,3235.65 2297.19,3235.65" />
 <polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="2540.79,2834.84 2590.39,2834.84" />
 <polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="2571.54,3035.25 2621.14,3035.25" />
-<polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="2579.04,3235.65 2628.64,3235.65" />
-<polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="2972.64,2834.84 3022.25,2834.84" />
-<polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="2919.89,3235.65 2969.5,3235.65" />
 <polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="8510.21,12186.8 8559.81,12186.8" />
 <polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="5966.19,12186.8 6015.8,12186.8" />
 <polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="4517.41,12186.8 4567.02,12186.8" />
@@ -1060,7 +1060,7 @@
 <polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="3526.5,6131.63 3576.11,6131.63" />
 <polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="3573.25,6532.44 3622.86,6532.44" />
 <polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="3962.6,6532.44 4012.21,6532.44" />
-<polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="2247.59,3235.65 2297.19,3235.65" />
+<polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="1948.41,2834.84 1998.02,2834.84" />
 <polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="4325.33,6532.44 4374.94,6532.44" />
 <polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="4737.96,6131.63 4787.57,6131.63" />
 <polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="4811.71,6332.04 4861.32,6332.04" />
@@ -1081,9 +1081,9 @@
 <polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="7600.95,9339.11 7650.56,9339.11" />
 <polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="8035.54,9339.11 8085.14,9339.11" />
 <polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="1882.97,6131.63 1932.58,6131.63" />
-<polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="1948.41,2834.84 1998.02,2834.84" />
-<polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="2228.59,3035.25 2278.19,3035.25" />
-<polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="1985.24,3235.65 2023.19,3235.65" />
+<polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="2579.04,3235.65 2628.64,3235.65" />
+<polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="2972.64,2834.84 3022.25,2834.84" />
+<polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="2919.89,3235.65 2969.5,3235.65" />
 <polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="3342.22,3035.25 3391.83,3035.25" />
 <polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="3711.83,2834.84 3761.44,2834.84" />
 <polyline class="LyricsLineSegment" fill="none" stroke="#000000" stroke-width="8.27" stroke-linejoin="bevel" points="4194.52,3235.65 4227.59,3235.65" />

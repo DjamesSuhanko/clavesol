@@ -23,7 +23,7 @@ Cria `FIX-score.mscz` ao lado do original. Nunca sobrescreve a entrada nem uma s
 - `--saida`: caminho opcional do MSCZ de saída. Sem ele usa `FIX-<entrada>`. Não sobrescreve arquivos e não pode ser combinado com `--to-site`.
 - `--to-site`: exporta e substitui os assets cadastrados, conforme abaixo.
 
-**`--up` e `--down` foram removidos.** Eles permitiam alterar a música. Agora o intervalo é deduzido da armadura original e da desejada; usa o intervalo mais próximo, preservando a altura sonora. A origem e a saída são exportadas pelo MuseScore em área temporária e comparadas pelo mesmo parser usado no site. Não há opção para ignorar essa verificação. Se som, letra, compassos ou claves divergirem, a saída não é publicada.
+**`--up` e `--down` foram removidos.** Eles permitiam alterar a música. Agora o intervalo é deduzido da armadura original e da desejada; resolve o intervalo escrito preservando a altura sonora; para Mi♭ alto, usa a transposição convencional −9 semitons, em vez de +3. A origem e a saída são exportadas pelo MuseScore em área temporária e comparadas pelo mesmo parser usado no site. Não há opção para ignorar essa verificação. Se som, letra, compassos ou claves divergirem, a saída não é publicada.
 
 As dependências são o ambiente Python `.venv` do site e o MuseScore instalado. É uma verificação das notas MIDI e de seus tempos/durações, não uma comparação de arquivos WAV sintetizados.
 
@@ -99,3 +99,21 @@ Exemplo: escrita em Sol para Si♭ → escrita em Fá para Dó:
 ```
 
 Nesse arquivo, o pentagrama superior passa de −2 para 0 semitons de transposição. O inferior, originalmente de clarinete baixo, passa de −14 para −12: conserva a oitava grave original. A escrita e as cifras ficam em Fá, mas o pentagrama inferior ainda soa uma oitava abaixo do escrito. O script conserva as claves e os nomes/timbres dos instrumentos; não converte automaticamente essa configuração de oitava em outra clave.
+
+
+## Registro correto para Mi♭ e divisão SATB
+
+No pentagrama superior, as vozes 1 e 2 são **soprano e contralto**. No inferior, as vozes 3 e 4 são **tenor e baixo**. A transposição é aplicada ao par completo de cada pentagrama; não se aplicam os limites do sax alto às vozes graves do pentagrama inferior.
+
+Ao converter a escrita em Sol para Ré (som em Fá), o cálculo antigo escolhia uma quarta descendente e deixava o instrumento superior com transposição +3 semitons. Isso colocava soprano e contralto uma oitava abaixo da escrita apropriada para sax alto em Mi♭. O script agora reconhece esse resultado e usa −9 semitons / −5 passos diatônicos: a escrita sobe uma quinta a partir do original em Sol, preservando as alturas sonoras. Não adiciona 8va/8vb e não altera claves.
+
+O inferior que já resulta em −9/−5 não é deslocado outra oitava. Assim, não se sobe toda a partitura indiscriminadamente. A correção também funciona ao reprocessar uma saída antiga que tenha +3/+2: a armadura permanece e o registro superior é corrigido. Reexecutar uma saída já corrigida não acrescenta outra oitava.
+
+Para testar novamente a partir do original, escolha uma saída nova:
+
+```bash
+.venv/bin/python transpor_hinos.py \
+  ../sol-gesu-clarinete-Bb-tom-G-2026.mscz \
+  --tonalidade D \
+  --saida ../sol-gesu-Eb-tom-D-corrigido.mscz
+```

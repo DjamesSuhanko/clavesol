@@ -3957,9 +3957,9 @@
         </note>
       </measure>
     <measure number="14" width="297.54">
-      <note default-x="12.5" default-y="-151.2">
+      <note default-x="12.5" default-y="-171.2">
         <pitch>
-          <step>G</step>
+          <step>C</step>
           <octave>5</octave>
           </pitch>
         <duration>4</duration>

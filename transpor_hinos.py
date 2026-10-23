@@ -148,12 +148,20 @@ def transform(source, destination, voices, key):
         old_letter, old_pitch = tonic(old_name)
         new_letter, new_pitch = tonic(key)
         semitones, steps = new_pitch-old_pitch, new_letter-old_letter
-        # Intervalo mais próximo; preserva o registro e evita oitavas gratuitas.
+        # Primeiro resolve a grafia; a convenção do instrumento determina a oitava.
         while semitones > 6:
             semitones -= 12; steps -= 7
         while semitones < -6:
             semitones += 12; steps += 7
         new_chrom, new_dia = chrom-semitones, dia-steps
+        # Mi♭ alto soa uma sexta maior abaixo da escrita (-9/-5),
+        # não uma terça menor acima (+3/+2). O intervalo mais curto
+        # sozinho escolhia a oitava errada. Subir a escrita uma oitava
+        # preserva pitch/TPC de concerto e não requer trocar a clave.
+        if (new_chrom, new_dia) == (3, 2):
+            semitones += 12
+            steps += 7
+            new_chrom, new_dia = -9, -5
         fifth_delta = KEYS[key]-old_key
         for ks in keys:
             if ks.find('custom') is not None or ks.find('atonal') is not None:
