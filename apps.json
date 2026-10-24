@@ -26,5 +26,12 @@
     "description": "Uma bíblia digital sem propagandas, para não atrapalhar a comunhão.",
     "image": "emet-capa.webp",
     "url": "https://emet.clavesol.com.br"
+  },
+  {
+    "slug": "mose",
+    "title": "Mose",
+    "description": "Transpositor de Partituras.",
+    "image": "mose.png",
+    "url": "https://mose.clavesol.com.br"
   }
 ]
