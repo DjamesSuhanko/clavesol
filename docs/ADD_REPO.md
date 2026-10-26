@@ -22,7 +22,9 @@ gh auth login
 
 **Cria o repositório, configura origin e envia o commit:**
 
-gh repo create Mose --private --source=. --remote=origin --push
+```
+gh repo create DjamesSuhanko/PROJETO --private
+```
 
 
 

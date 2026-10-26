@@ -33,5 +33,12 @@
     "description": "Transpositor de Partituras.",
     "image": "mose.png",
     "url": "https://mose.clavesol.com.br"
+  },
+  {
+    "slug": "partitool",
+    "title": "Partitool",
+    "description": "PDF - Lilypond - XMLMusic",
+    "image": "partitool.png",
+    "url": "https://partitool.clavesol.com.br/"
   }
 ]
