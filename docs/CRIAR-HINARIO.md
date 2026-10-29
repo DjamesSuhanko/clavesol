@@ -69,13 +69,27 @@ carrossel/
   padrao.txt
 ```
 
-Aceita WebP, PNG, JPEG e SVG. O nome, sem extensão, deve conter apenas números: `01`, `02`, `03`, etc. A ordem é **numérica** (2 antes de 10). Não use dois arquivos com o mesmo número. Os `.txt` opcionais contêm a descrição acessível de cada imagem. SVG deve ser uma imagem de sua confiança, sem scripts.
+Aceita WebP, PNG, JPEG e SVG. O nome deve começar pelo número: `01.webp`, `02.webp` ou `01-CantusCaeli.webp`, `02-Emet.webp`, por exemplo. O nome pode ter uma descrição após hífen, sublinhado ou espaço. O `.txt` deve ter o mesmo nome-base da imagem: `01-CantusCaeli.txt`. A ordem é **numérica** (2 antes de 10). Não use dois arquivos com o mesmo número. Os `.txt` opcionais contêm a descrição acessível de cada imagem. SVG deve ser uma imagem de sua confiança, sem scripts.
 
 O `padrao.svg` é uma imagem original verde e dourada do ClaveSol. É usada automaticamente quando não existe imagem numerada; não a remova. O fallback não aparece junto com banners personalizados.
 
-**Tamanho sugerido: 1600 × 320 pixels (5:1)**. A área tem entre 120 e 240 pixels de altura, conforme a tela. As imagens ficam inteiras, sem cortar textos; formatos diferentes podem deixar margens laterais. Mantenha pouco texto e fontes grandes para leitura no celular. Não há rotação automática: o visitante usa os botões ou as setas do teclado. Uma única imagem é exibida sem controles.
+**Tamanho sugerido: 1600 × 320 pixels (5:1)**. A área mantém a proporção 5:1: a altura é calculada a partir da largura disponível, acompanhando imagens de 1600 × 320 sem margens laterais. As imagens são exibidas inteiras, sem corte nem deformação. Use a proporção 5:1 para preencher exatamente a área. Mantenha pouco texto e fontes grandes para leitura no celular. As imagens trocam automaticamente a cada **5 segundos**, voltando à primeira após a última. As setas continuam disponíveis. A troca pausa enquanto o mouse estiver sobre o carrossel, houver foco do teclado nele ou a aba estiver oculta. O botão **Pausar/Retomar** permite controlar a rotação. Uma única imagem é exibida sem controles.
 
 Imagens e `.txt` devem entrar no commit. Ao adicionar banners depois, faça commit e push no repositório do acervo ou execute novamente o criador. O build lê `carrossel/` a cada execução.
+
+
+### Link de destino por banner
+
+No `.txt` de mesmo nome da imagem, mantenha a descrição e acrescente uma linha `Link:` com a URL completa. Exemplo: `carrossel/01.webp` e `carrossel/01.txt`:
+
+```text
+Conheça o Musicool, aplicativo Clave Sol.
+Link: https://musicool.clavesol.com.br/
+```
+
+Ao clicar na imagem, o visitante abre o destino na mesma aba. Use URLs completas com `https://` ou `http://`, inclusive para páginas do próprio site. O texto do `.txt` aparece como legenda sobre a parte inferior da imagem, em uma faixa verde translúcida, e também é acessível a leitores de tela. A linha `Link:` não aparece na legenda. Sem texto, nenhuma faixa é exibida. Sem essa linha (ou com `Link:` vazio), o banner permanece sem link. Os `.txt` antigos, contendo somente descrição, continuam funcionando. O mesmo formato vale para `padrao.txt`.
+
+Inclua a imagem e seu `.txt` no commit e publique o site novamente. Em acervos já criados, é necessário atualizar também `carousel.py`, `assets/carrossel.mjs` e `assets/carrossel.css` com os arquivos de `templates/hinario-site/` do projeto principal; editar apenas o `.txt` não adiciona este recurso à versão antiga do carrossel.
 
 ## Prévia local
 

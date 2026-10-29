@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cria um acervo Clave Sol com player, carrossel e GitHub Pages. Veja docs/CRIAR-HINARIO.md."""
+"""Cria um acervo musical Clave Sol, prepara o Pages e cadastra o card local no site principal."""
 import argparse
 from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED
 import hashlib
@@ -57,7 +57,20 @@ def initialize(destination,domain,title,description,repository,tipo):
     for name in MODULES:files[name]=(ROOT/name).read_bytes()
     for name in ASSETS:files['assets/'+name]=(ROOT/'assets'/name).read_bytes()
     files['scripts/check_links.py']=(ROOT/'scripts/check_links.py').read_bytes()
-    config={'collection':'musicas' if tipo == 'musicas' else 'acervo','label':title,'repository':repository.split('/')[-1]}
+    # O template usa os módulos atuais da raiz. Sem o suporte a Tipo, o card
+    # de um acervo musical externo ainda seria rotulado indevidamente HINÁRIO.
+    if tipo == 'musicas':
+        if b"meta.get('tipo'" not in files['score_catalog.py'] or b'ACERVO MUSICAL' not in files['music_pages.py']:
+            raise ValueError('score_catalog.py/music_pages.py ainda não reconhecem Tipo: musicas. '
+                             'Aplique primeiro a correção dos rótulos no site principal.')
+        # Evita publicar um site novo com o build.py antigo, que exigia hinos/acervo.
+        template_build = files.get('build.py', b'')
+        if not template_build:
+            raise ValueError('Template build.py ausente em templates/hinario-site/.')
+        if b"s.parent=='hinos/'+config['collection']" in template_build or b"s.parent == 'hinos/' + config['collection']" in template_build:
+            raise ValueError('O template build.py ainda é exclusivo para hinos. '
+                             'Atualize templates/hinario-site/build.py com a versão genérica antes de criar novos acervos.')
+    config={'collection':'musicas' if tipo == 'musicas' else 'acervo','tipo':tipo,'label':title,'repository':repository.split('/')[-1]}
     files['hinario.json']=(json.dumps(config,ensure_ascii=False,indent=2)+'\n').encode()
     files['seo.json']=(json.dumps({'site_url':'https://'+domain,'site_name':'Clave Sol','description':description,'default_image':'clarinet.jpg','default_image_alt':'Detalhe de um clarinete','social_profiles':['https://www.youtube.com/@ClaveSolMusic']},ensure_ascii=False,indent=2)+'\n').encode()
     files['CNAME']=(domain+'\n').encode()
@@ -65,13 +78,13 @@ def initialize(destination,domain,title,description,repository,tipo):
         for key in list(files):
             if key.startswith('partituras/hinos/'):
                 del files[key]
-        files['partituras/musicas/_index.md'] = f'Title: Músicas\nDescription: {description}\n'.encode()
-        if 'music_pages.py' in files:
-            files['music_pages.py'] = files['music_pages.py'].replace(b'Hino completo', 'Música completa'.encode('utf-8'))
+        files['partituras/musicas/_index.md'] = f'Title: Músicas\nDescription: {description}\nTipo: musicas\n'.encode()
     else:
-        files['partituras/hinos/_index.md']=b'Title: Hinos\n'
-        files['partituras/hinos/acervo/_index.md']=f'Title: {title}\nDescription: {description}\n'.encode()
-    files['GUIA-ACERVO.md']=(ROOT/'docs/CRIAR-HINARIO.md').read_bytes()
+        files['partituras/hinos/_index.md']=b'Title: Hinos\nTipo: hinario\n'
+        files['partituras/hinos/acervo/_index.md']=f'Title: {title}\nDescription: {description}\nTipo: hinario\n'.encode()
+    guide=ROOT/'docs/CRIAR-ACERVO.md'
+    if not guide.is_file():guide=ROOT/'docs/CRIAR-HINARIO.md'
+    files['GUIA-ACERVO.md']=guide.read_bytes()
     files['README.md']=f'''# {title}
 
 {description}
@@ -357,6 +370,66 @@ def import_scores(args, destination, state, report):
     return report
 
 
+
+def register_main_site(args, main_root, domain, *, dry_run=False):
+    """Cadastra card no blog, sem commitar, publicar ou modificar outros índices.
+
+    Só é chamado após configuração bem-sucedida do repositório/Pages, nunca no
+    modo --somente-local. O domínio precisa ser publicado depois pelo usuário.
+    """
+    main_root = Path(main_root).expanduser().resolve()
+    if not (main_root / 'score_catalog.py').is_file() or not (main_root / 'partituras').is_dir():
+        raise ValueError('Não encontrei o site principal em ' + str(main_root) +
+                         '. Informe --site-principal ou use --sem-cadastro-principal.')
+    # Confirme que o gerador principal conhece a distinção entre tipos.
+    if args.tipo == 'musicas':
+        catalog = (main_root / 'score_catalog.py').read_text(encoding='utf-8')
+        pages_path = main_root / 'music_pages.py'
+        pages = pages_path.read_text(encoding='utf-8') if pages_path.is_file() else ''
+        if "meta.get('tipo'" not in catalog or 'ACERVO MUSICAL' not in pages:
+            raise ValueError('O site principal ainda não reconhece Tipo: musicas. '
+                             'Aplique a correção dos rótulos antes de cadastrar o acervo.')
+    path = main_root / 'partituras' / args.dominio / '_index.md'
+    url = 'https://' + domain + '/'
+    tipo = 'musicas' if args.tipo == 'musicas' else 'hinario'
+    data = f'Title: {args.titulo}\nDescription: {args.descricao}\nLink: {url}\nTipo: {tipo}\n'
+    if path.exists():
+        if not path.is_file():
+            raise ValueError('Cadastro do site principal não é arquivo: ' + str(path))
+        original = path.read_text(encoding='utf-8')
+        def field(name):
+            match = re.search(r'^' + re.escape(name) + r':[ \t]*(.*)$', original, re.M | re.I)
+            return match.group(1).strip() if match else None
+        existing_link = field('Link')
+        if existing_link is None or existing_link.rstrip('/') != url.rstrip('/'):
+            raise ValueError(f'O cadastro {path} já existe e não aponta para {url}; '
+                             'não será modificado automaticamente.')
+        old_tipo = field('Tipo')
+        if old_tipo and old_tipo.lower() != tipo:
+            raise ValueError(f'{path} tem Tipo: {old_tipo}, esperado: {tipo}. '
+                             'Corrija manualmente antes de publicar o site principal.')
+        if old_tipo is None:
+            if dry_run:return path
+            # Preserva descrição, título e outros campos que possam ter sido editados.
+            updated = original.rstrip('\n') + f'\nTipo: {tipo}\n'
+            path.write_text(updated, encoding='utf-8')
+            print('Tipo adicionado ao card existente:', path, flush=True)
+        else:
+            print('Card já cadastrado no site principal:', path, flush=True)
+        return path
+    # Não transformar uma coleção interna existente em um link externo.
+    if path.parent.exists() and any(path.parent.iterdir()):
+        raise ValueError(f'{path.parent} contém conteúdo sem cadastro; '
+                         'nenhum arquivo existente será alterado.')
+    if dry_run:return path
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name('_index.md.tmp')
+    temporary.write_text(data, encoding='utf-8')
+    temporary.replace(path)
+    print('Card preparado no site principal:', path, flush=True)
+    return path
+
+
 def configure_github(destination,state,args):
     repo=state['repository'];expected='https://github.com/'+repo+'.git'
     if not (destination/'.git').exists():run(['git','init','-b','main'],cwd=destination)
@@ -416,6 +489,8 @@ def configure_github(destination,state,args):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--destino',type=Path,required=True)
+    parser.add_argument('--site-principal',type=Path,default=ROOT,help='Raiz do site Clave Sol que receberá o card (padrão: pasta do script).')
+    parser.add_argument('--sem-cadastro-principal',action='store_true',help='Não cadastrar card no site principal. Não altera o site remoto.')
     parser.add_argument('--tipo',choices=('musicas','hinos'),default='musicas',help='Músicas por compositor ou hinário legado.')
     parser.add_argument('--workers',type=int,default=3,help='Conversões simultâneas do MuseScore (padrão 3).')
     parser.add_argument('--pastas-tematicas',default='Christmas',help='Pastas separadas por vírgula que não representam compositores.')
@@ -449,6 +524,8 @@ def main():
             if not sources: raise ValueError('Nenhum arquivo encontrado.')
             seen = set()
             print(f'SIMULAÇÃO: {len(sources)} arquivos encontrados; nenhum será alterado.', flush=True)
+            if not args.sem_cadastro_principal and not args.somente_local:
+                print(f'  Card futuro: {args.site_principal.expanduser().resolve()}/partituras/{args.dominio}/_index.md', flush=True)
             for i, source in enumerate(sources):
                 rel = source.relative_to(args.origem)
                 group = slugify(rel.parts[0]) if len(rel.parts) > 1 else 'sem-autor'
@@ -482,7 +559,14 @@ def main():
         if report['erros'] and not args.ignorar_incompativeis:
             report['status']='erros_importacao';write_json(destination/'.importacao/resumo.json',report)
             raise ValueError('Há arquivos incompatíveis. Veja .importacao/resumo.json; nada enviado. Use --ignorar-incompativeis se quiser publicar apenas os funcionais.')
-        if not args.somente_local:configure_github(destination,state,args)
+        if not args.somente_local:
+            if not args.sem_cadastro_principal:
+                # Detecta conflitos antes de alterar o repositório remoto.
+                register_main_site(args, args.site_principal, state['domain'], dry_run=True)
+            configure_github(destination,state,args)
+            if not args.sem_cadastro_principal:
+                register_main_site(args, args.site_principal, state['domain'])
+                print('O card foi cadastrado LOCALMENTE; publique o site principal só quando o domínio funcionar.', flush=True)
         report['status']='pronto_local' if args.somente_local else 'pronto_pages';write_json(destination/'.importacao/resumo.json',report)
         print('Pronto:',destination,'\nResumo:',destination/'.importacao/resumo.json')
     except (ValueError,OSError,subprocess.SubprocessError,ET.ParseError) as error:
