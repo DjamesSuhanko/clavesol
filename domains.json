@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "catalogs": [
+    {
+      "id": "root",
+      "title": "Clave Sol",
+      "url": "https://clavesol.com.br/cardapio.json"
+    },
+    {
+      "id": "eb",
+      "title": "CCB Bb",
+      "url": "https://eb.clavesol.com.br/cardapio.json"
+    },
+    {
+      "id": "harpa",
+      "title": "Harpa Cristã",
+      "url": "https://harpa.clavesol.com.br/cardapio.json"
+    },
+    {
+      "id": "choro",
+      "title": "Choro",
+      "url": "https://choro.clavesol.com.br/cardapio.json"
+    }
+  ]
+}

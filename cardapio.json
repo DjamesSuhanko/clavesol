@@ -1,0 +1,235 @@
+{
+  "schemaVersion": 1,
+  "categories": [
+    {
+      "id": "208c376c003b65e8d23b",
+      "title": "MSA do GEM",
+      "icon": "folder",
+      "order": 0,
+      "parentId": null,
+      "count": 3
+    },
+    {
+      "id": "213dc628ab818c5847ee",
+      "title": "Métodos",
+      "icon": "folder",
+      "order": 1,
+      "parentId": null,
+      "count": 4
+    },
+    {
+      "id": "c6a0b7cdef09101aa02e",
+      "title": "Hinos",
+      "icon": "folder",
+      "order": 2,
+      "parentId": null,
+      "count": 10
+    }
+  ],
+  "scores": [
+    {
+      "id": "730b2c703277706def9846c6",
+      "title": "107 - MSA",
+      "composer": "P. Bona",
+      "filename": "score.musicxml",
+      "musicxmlUrl": "https://clavesol.com.br/assets/music/msa/107-msa/score.musicxml",
+      "sha256": "93a7bbfee003ff213a2867bf1c8b1d2be6efe8782ab19e406c5349676ea64eee",
+      "bytes": 68762,
+      "categoryIds": [
+        "208c376c003b65e8d23b"
+      ]
+    },
+    {
+      "id": "d95f6bc3b78c5e70f75b81ad",
+      "title": "184 - Nós te louvamos, por fé, grande Deus",
+      "composer": "Peter Ritter",
+      "filename": "score.musicxml",
+      "musicxmlUrl": "https://clavesol.com.br/assets/music/hinos/outros/184-nos-te-louvamos-por-fe-grande-deus/score.musicxml",
+      "sha256": "8595c1b5eab46fe2ab49123cbeb707afddb579032543705755b74f9c8f818149",
+      "bytes": 43783,
+      "categoryIds": [
+        "c6a0b7cdef09101aa02e"
+      ]
+    },
+    {
+      "id": "fe77511da0c551db93cf2619",
+      "title": "208 - Conserva a paz, ó minha alma",
+      "composer": "Jean Sibelius",
+      "filename": "score.musicxml",
+      "musicxmlUrl": "https://clavesol.com.br/assets/music/hinos/outros/208-conserva-a-paz-o-minha-alma/score.musicxml",
+      "sha256": "3a5cddc7b9820776d5e583406840d5efafd78725c62458002cb35d1e58c7ae1c",
+      "bytes": 86174,
+      "categoryIds": [
+        "c6a0b7cdef09101aa02e"
+      ]
+    },
+    {
+      "id": "43de4a271f788f881661d4d4",
+      "title": "208 - Conserva a paz, ó minha alma",
+      "composer": "Jean Sibelius",
+      "filename": "score.musicxml",
+      "musicxmlUrl": "https://clavesol.com.br/assets/music/hinos/outros/208v3/score.musicxml",
+      "sha256": "a7ccd58785e7a2087a3d8216e951e227219e25d36e52343a957a97d54abbf5b9",
+      "bytes": 128277,
+      "categoryIds": [
+        "c6a0b7cdef09101aa02e"
+      ]
+    },
+    {
+      "id": "92b710ab751ad23f6f3a41af",
+      "title": "208 - Conserva a paz, ó minha alma",
+      "composer": "Jean Sibelius",
+      "filename": "score.musicxml",
+      "musicxmlUrl": "https://clavesol.com.br/assets/music/metodos/extras/208-v3-conserva-a-paz-para-estudo/score.musicxml",
+      "sha256": "f211e9a526701682c515e5c89657dca8ed5d4f6fc7fde8e0b57ca33e3509c3b7",
+      "bytes": 128277,
+      "categoryIds": [
+        "213dc628ab818c5847ee"
+      ]
+    },
+    {
+      "id": "50bddcc5b4d100d9597010a5",
+      "title": "374 - Santo, Santo, Santo",
+      "composer": "John Bacchus Dykes",
+      "filename": "score.musicxml",
+      "musicxmlUrl": "https://clavesol.com.br/assets/music/hinos/outros/374-santo-santo-santo/score.musicxml",
+      "sha256": "7eca01888b3e25476e5deb84dd4a4265307eee683d2cfd6a0f2162bbab8a17b2",
+      "bytes": 67920,
+      "categoryIds": [
+        "c6a0b7cdef09101aa02e"
+      ]
+    },
+    {
+      "id": "3ff770a990a9cb90de2faa5c",
+      "title": "Lição 20 - Página 40",
+      "composer": "Domingos Pecci",
+      "filename": "score.musicxml",
+      "musicxmlUrl": "https://clavesol.com.br/assets/music/metodos/domingos-pecci/clarinete-20p40/score.musicxml",
+      "sha256": "cc4c5948a169d31e37a766f68ea381db735637be7ad04c6500f57a11f70e8b5e",
+      "bytes": 41863,
+      "categoryIds": [
+        "213dc628ab818c5847ee"
+      ]
+    },
+    {
+      "id": "10a53179c46e97ba9390583f",
+      "title": "MSA - 109",
+      "composer": "P. Bona",
+      "filename": "score.musicxml",
+      "musicxmlUrl": "https://clavesol.com.br/assets/music/msa/msa-109/score.musicxml",
+      "sha256": "dad9d67eb212b89b068d5dd4e5bbe54b7f583d5c6a2caddbf7f9d3fac9a2adc9",
+      "bytes": 101517,
+      "categoryIds": [
+        "208c376c003b65e8d23b"
+      ]
+    },
+    {
+      "id": "c0bc1cfd6cfa257764431a3e",
+      "title": "Sol Gesù! Sol Gesù!",
+      "composer": "Geo. C. Hugg",
+      "filename": "score.musicxml",
+      "musicxmlUrl": "https://clavesol.com.br/assets/music/hinos/outros/sol-gesu-c-tom-f/score.musicxml",
+      "sha256": "9ddbf8e4dfd737a272cd5e2c9f14447bf06eec33945590fb91d86cf32a709588",
+      "bytes": 126324,
+      "categoryIds": [
+        "c6a0b7cdef09101aa02e"
+      ]
+    },
+    {
+      "id": "c9a83621381ca15068a207fd",
+      "title": "Sol Gesù! Sol Gesù!",
+      "composer": "Geo. C. Hugg",
+      "filename": "score.musicxml",
+      "musicxmlUrl": "https://clavesol.com.br/assets/music/hinos/outros/sol-gesu-clarinete-bb-tom-g-2026/score.musicxml",
+      "sha256": "fa817a1524e7ae05b15c77ecafc07833428754edba37046f2e5d64545ffb1835",
+      "bytes": 125387,
+      "categoryIds": [
+        "c6a0b7cdef09101aa02e"
+      ]
+    },
+    {
+      "id": "96eab3d42af423d149cea703",
+      "title": "Sol Gesù! Sol Gesù!",
+      "composer": "Geo. C. Hugg",
+      "filename": "score.musicxml",
+      "musicxmlUrl": "https://clavesol.com.br/assets/music/hinos/outros/sol-gesu-clarinete-bb-tom-g/score.musicxml",
+      "sha256": "9a3bdd696253c3707c71a3bfa28ef5a4ee847a239b063cc8454ef0a9bff4539c",
+      "bytes": 122701,
+      "categoryIds": [
+        "c6a0b7cdef09101aa02e"
+      ]
+    },
+    {
+      "id": "8a285ffbeec858903c2fd2cc",
+      "title": "Sol Gesù! Sol Gesù!",
+      "composer": "Geo. C. Hugg",
+      "filename": "score.musicxml",
+      "musicxmlUrl": "https://clavesol.com.br/assets/music/hinos/outros/sol-gesu-eb-tom-d/score.musicxml",
+      "sha256": "979d114b118088fa7741e9d7981bf892df3668a15ba723c3fd0a0140828b58d0",
+      "bytes": 126958,
+      "categoryIds": [
+        "c6a0b7cdef09101aa02e"
+      ]
+    },
+    {
+      "id": "0d9723833236696dd12c6fca",
+      "title": "Untitled score",
+      "composer": "Composer / arranger",
+      "filename": "score.musicxml",
+      "musicxmlUrl": "https://clavesol.com.br/assets/music/hinos/outros/144-a-vida-eterna/score.musicxml",
+      "sha256": "899513a3f568ccf028db02bf8f1b366379af32ab3ffade9e8f9a197cddaffba1",
+      "bytes": 52195,
+      "categoryIds": [
+        "c6a0b7cdef09101aa02e"
+      ]
+    },
+    {
+      "id": "702b162a93004d0806328fa8",
+      "title": "Untitled score",
+      "composer": "Composer / arranger",
+      "filename": "score.musicxml",
+      "musicxmlUrl": "https://clavesol.com.br/assets/music/hinos/outros/38-o-senhor-es-minha-vida/score.musicxml",
+      "sha256": "3e3735a65e271daa092b183098f510f6667208f66893d9f405de3a05f26e73a0",
+      "bytes": 39879,
+      "categoryIds": [
+        "c6a0b7cdef09101aa02e"
+      ]
+    },
+    {
+      "id": "a23197d4800319d6886a66be",
+      "title": "Untitled score",
+      "composer": "Composer / arranger",
+      "filename": "score.musicxml",
+      "musicxmlUrl": "https://clavesol.com.br/assets/music/metodos/extras/endecagrama/score.musicxml",
+      "sha256": "23f285cef32d38f4ff99c847fd01603572c97bbd1ec9884319da3ed7ef30ef07",
+      "bytes": 20043,
+      "categoryIds": [
+        "213dc628ab818c5847ee"
+      ]
+    },
+    {
+      "id": "42078ea6a07ad6dbc1579143",
+      "title": "Untitled score",
+      "composer": "Composer / arranger",
+      "filename": "score.musicxml",
+      "musicxmlUrl": "https://clavesol.com.br/assets/music/metodos/extras/pelo-deserto/score.musicxml",
+      "sha256": "e0d0ac1b222ac808569f103828f21773267bb66117802d7ceb0b07c5e2066214",
+      "bytes": 75234,
+      "categoryIds": [
+        "213dc628ab818c5847ee"
+      ]
+    },
+    {
+      "id": "053ba077506a76b7c27c4277",
+      "title": "Untitled score",
+      "composer": "Composer / arranger",
+      "filename": "score.musicxml",
+      "musicxmlUrl": "https://clavesol.com.br/assets/music/msa/108-msa/score.musicxml",
+      "sha256": "7b95a389ca6101905ea8200270cf7e91113d8a0c5bab67cf10d8473ba9f32730",
+      "bytes": 116131,
+      "categoryIds": [
+        "208c376c003b65e8d23b"
+      ]
+    }
+  ]
+}
