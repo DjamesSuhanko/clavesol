@@ -3,6 +3,8 @@ from pathlib import Path
 import json
 import os
 import shutil
+import hashlib
+import re
 
 from score_catalog import load_catalog
 from music_pages import build_music
@@ -16,6 +18,53 @@ ROOT = Path(__file__).resolve().parent
 config = json.loads((ROOT / 'hinario.json').read_text(encoding='utf-8'))
 BASE = os.environ.get('BASE_PATH', '').rstrip('/')
 OUT = ROOT / 'dist'
+
+
+def validar_catalogo_publico():
+    """Confere os JSONs gerados pelo Mose antes de reconstruir dist/.
+
+    Um acervo recém-criado ainda pode não ter catálogo. Nesse caso, o build
+    prossegue sem publicar esses arquivos. Um par incompleto ou com checksum
+    incorreto é erro, para não distribuir um catálogo inconsistente.
+    """
+    catalogo = ROOT / 'cardapio.json'
+    checksum = ROOT / 'cardapio.sha256'
+    existe_catalogo = catalogo.is_file()
+    existe_checksum = checksum.is_file()
+
+    if not existe_catalogo and not existe_checksum:
+        if os.environ.get('EXIGIR_CARDAPIO', '').strip().lower() in ('1', 'true', 'yes', 'sim'):
+            raise FileNotFoundError(
+                'EXIGIR_CARDAPIO ativo: cardapio.json e cardapio.sha256 ' 
+                'precisam existir na raiz do projeto.'
+            )
+        print('Aviso: sem cardapio.json/cardapio.sha256; site gerado sem catálogo Mose.')
+        return ()
+
+    if not (existe_catalogo and existe_checksum):
+        raise FileNotFoundError(
+            'Catálogo incompleto: cardapio.json e cardapio.sha256 ' 
+            'devem existir juntos na raiz do projeto.'
+        )
+
+    esperado = checksum.read_text(encoding='utf-8').strip().lower()
+    if not re.fullmatch(r'[0-9a-f]{64}', esperado):
+        raise ValueError('cardapio.sha256 deve conter somente um SHA-256 hexadecimal.')
+
+    obtido = hashlib.sha256(catalogo.read_bytes()).hexdigest()
+    if obtido != esperado:
+        raise ValueError(
+            'cardapio.sha256 não corresponde a cardapio.json. ' 
+            'Gere novamente ambos com o gerador do Mose.'
+        )
+
+    # O catálogo deve ser JSON válido, sem impor outro esquema ao site.
+    with catalogo.open(encoding='utf-8') as arquivo:
+        json.load(arquivo)
+    return (catalogo, checksum)
+
+
+ARQUIVOS_CATALOGO = validar_catalogo_publico()
 
 # The generic importer stores music in partituras/musicas/<grupo>/<titulo>.md.
 # Older repositories use partituras/hinos/<colecao>/<titulo>.md.
@@ -100,4 +149,9 @@ shutil.copyfile(ROOT / 'CNAME', OUT / 'CNAME')
 seo = json.loads((ROOT / 'seo.json').read_text(encoding='utf-8'))
 finish_seo(OUT, BASE, seo, aliases={route: '', 'musica': 'partituras'})
 finish_build(OUT, BASE)
+# Copie depois do pós-processamento; o GitHub Pages publica somente dist/.
+for origem in ARQUIVOS_CATALOGO:
+    destino = OUT / origem.name
+    shutil.copyfile(origem, destino)
+    print(f'Incluído no site: {destino}')
 print(f'{len(catalog.scores)} partituras validadas; site em {OUT}')
