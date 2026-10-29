@@ -17,6 +17,7 @@ class Group:
     description: str = ''
     body: str = ''
     link: str = ''
+    tipo: str = 'hinario'
 
 
 @dataclass
@@ -141,7 +142,7 @@ def load_catalog(root):
             raise ValueError(f'{source}: índices devem estar na categoria ou coleção')
         meta, body = read_markdown(source)
         group(key.split('/')[0])
-        groups[key] = Group(key, meta.get('title', key), meta.get('description', ''), body, meta.get('link', ''))
+        groups[key] = Group(key, meta.get('title', key), meta.get('description', ''), body, meta.get('link', ''), meta.get('tipo', 'hinario').strip().lower())
 
     for source in sorted(directory.rglob('*.md')):
         if source.name == '_index.md':
