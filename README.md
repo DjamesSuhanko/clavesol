@@ -95,3 +95,7 @@ Nos artigos, o índice passa para cima do texto em telas de até 1050 px, e tabe
 ## Apps e sites de aplicativos
 
 A seção Apps usa `apps.json`. Cadastre cards com `criar_app.py` e prepare sites independentes com `criar_site_app.py`. Veja os parâmetros, exemplos e a configuração do GitHub Pages no [guia de Apps e subdomínios](docs/APPS-E-SUBDOMINIOS.md).
+
+## Criar um subdomínio de partituras
+
+Use `criar_hinario.py` para preparar um acervo com o player dos hinários, busca, carrossel na entrada e GitHub Pages. Aceita MusicXML, MID e MSCZ e oferece somente MusicXML para download. Parâmetros e exemplos em [CRIAR-HINARIO.md](docs/CRIAR-HINARIO.md).
