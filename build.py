@@ -18,6 +18,17 @@ catalog = load_catalog(ROOT)
 if OUT.exists(): shutil.rmtree(OUT)
 OUT.mkdir()
 for name in ('app.webmanifest','sw.js'):shutil.copyfile(ROOT/name,OUT/name)
+# Incluir os arquivos públicos dos catálogos do Mose no site gerado (GitHub Pages publica dist/).
+# O arquivo de descoberta é obrigatório: sem ele o aplicativo não encontra os catálogos.
+domains_json = ROOT / 'domains.json'
+if not domains_json.is_file():
+ raise FileNotFoundError(f'Arquivo obrigatório do Mose ausente: {domains_json}')
+shutil.copyfile(domains_json, OUT / 'domains.json')
+# O catálogo próprio deste domínio e seu hash são opcionais.
+for name in ('cardapio.json', 'cardapio.sha256'):
+ source = ROOT / name
+ if source.is_file():
+  shutil.copyfile(source, OUT / name)
 shutil.copytree(ROOT/'assets',OUT/'assets')
 for score in catalog.scores:
  if score.sequence:
