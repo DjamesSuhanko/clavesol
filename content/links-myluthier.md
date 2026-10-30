@@ -11,9 +11,7 @@ Para músicos, é excepcional para treinar embocadura e sustentação de notas, 
 
 Para cordas também, no treinamento de arcada. No início é muito comum que o músico não perceba as deficiências apenas escutando, mas com um gráfico como esse, não tem desculpa para não melhorar!
 
-Porém, a Play Store não deixa publicar direto em produção sem passar por 14 dias de teste. Quer uma cópia grátis? Entre em contato com djames.suhanko@gmail.com com o título "MyLuthier" e eu envio o link e uma chave de código promocional para sair de graça.
-
-O preço dele é 19,90. Se você não pegar de graça agora que sou obrigado a testar, não adianta chorar depois!
+O l[ink do MyLythier na Play store é esse](https://play.google.com/store/apps/details?id=com.suhanko.myluthier.mobile&hl=pt_BR), aos interessados.
 
 ![MyLuthier]({{BASE}}/assets/myluthierPequeno.webp)
 

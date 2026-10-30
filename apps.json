@@ -40,5 +40,12 @@
     "description": "PDF - Lilypond - XMLMusic",
     "image": "partitool.png",
     "url": "https://partitool.clavesol.com.br/"
+  },
+  {
+    "slug": "piano-player",
+    "title": "Piano Player",
+    "description": "Sintetizador online de midis, com download.",
+    "image": "piano-player.png",
+    "url": "https://midi.clavesol.com.br/"
   }
 ]
