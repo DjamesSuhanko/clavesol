@@ -84,7 +84,7 @@ Se `partituras/<dominio>/_index.md` já existir, o script respeita o título e d
 
 ## Limitações da verificação
 
-Foram validados: sintaxe Python, registro de cards novos, retomada sem duplicação, preservação de índice existente, detecção de conflitos e inicialização de um acervo musical usando templates simulados. Não foi possível executar o MuseScore, o build real do projeto ou as chamadas GitHub nesta máquina. O template do seu projeto não foi anexado nesta conversa; a checagem de compatibilidade exige que ele não use a validação antiga `s.parent=='hinos/'+config['collection']`.
+Foram validados: sintaxe Python, registro de cards novos, retomada sem duplicação, preservação de índice existente, detecção de conflitos e inicialização de um acervo musical usando templates simulados. Não foi possível executar o MuseScore, o build real do projeto ou as chamadas GitHub nesta máquina. O template do projeto não foi anexado nesta doc; a checagem de compatibilidade exige que ele não use a validação antiga `s.parent=='hinos/'+config['collection']`.
 
 ## Carrossel
 
