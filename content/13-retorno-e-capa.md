@@ -1,6 +1,6 @@
 Title: Retorno e Da Capa
 Description: Apresentação da forma mais simples de Ritornelo e "Da Capo"
-Category: tutoriais
+Category: gem
 Image: ritornelo01.webp
 
 ## Ritornelo
