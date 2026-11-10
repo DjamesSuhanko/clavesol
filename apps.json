@@ -47,5 +47,12 @@
     "description": "Sintetizador online de midis, com download.",
     "image": "piano-player.png",
     "url": "https://midi.clavesol.com.br/"
+  },
+  {
+    "slug": "jasei",
+    "title": "JaSei",
+    "description": "Treino musical",
+    "image": "jasei.webp",
+    "url": "https://jasei.clavesol.com.br/"
   }
 ]
