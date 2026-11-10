@@ -11,7 +11,13 @@ De fato, uma caixa de ferramentas.
 
 ### Afinador
 
- Em sua primeira tela, o Musicool possui um belo afinador. Além de mostrar o valor da frequência através do ponteiro, há também um pentagrama embaixo que mostra a altura da nota, variando entre a clave Fá e Sol, do grave ao agudo, respectivamente.
+O Musicool está completamente renovado! 
+
+Em sua primeira tela, temos a apresentação do aplicativo, que conta com o **Afinador**, **Metrônomo** e **Gerador de Frequências** das notas, para conferência da afinação. 
+
+Logo na segunda linha de cards encontra-se **Ferramentas** (da qual descrevo mais abaixo), **Tour** e **Compartilhar**, para compartilhar o link do ***Musicool*** com outros músicos.
+
+E na terceira linha de cards, tem a opção de "Vale R$ 1,00", para quem quiser colaborar com o desenvolvimento desse e de outros aplicativos gratuitos, através de PIX.
 
 ### Notas
 
@@ -23,7 +29,8 @@ Na aba Metrônomo você encontrará o melhor metrônomo que há, permitindo dife
 
 ### Ferramentas
 
-Na aba ferramentas há uma calculadora de compasso, além do ajuste da frequência de Lá, que em algumas orquestras é 442Hz, mas já existiu o Lá 338Hz, muito comum nos (nada saudosos) telefones públicos, cuja frequência gerada ao tom de linha era justamente a frequência que alguns violonistas usavam como referência para afinação.
+O menu **Ferramentas** conta agora com uma **Calculadora de Compasso**, um **Gerador de Acordes** que permite digitar o acorde ou montar o acorde no braço do violão - e também permite tocá-lo! Além disso, foi adicionada a **Roda das Quintas**, que é um mapeamento harmônico para fazermos progressão harmônica e identifcar os acordes que correspondem a uma sequência. Ao tocar na tonalidade ou em sua relativa menor, uma progressão harmônica de exemplo (IV-I-V) é tocada. São mostrados os graus e a armadura de clave da tonalidade, entre outros recursos.
+ Há também o ajuste da frequência de Lá, que em algumas orquestras é 442Hz, mas já existiu o Lá 338Hz, muito comum nos (nada saudosos) telefones públicos, cuja frequência gerada ao tom de linha era justamente a frequência que alguns violonistas usavam como referência para afinação.
 
 
 
