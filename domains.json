@@ -7,7 +7,7 @@
       "url": "https://clavesol.com.br/cardapio.json"
     },
     {
-      "id": "eb",
+      "id": "bb",
       "title": "CCB Bb",
       "url": "https://eb.clavesol.com.br/cardapio.json"
     },
@@ -20,6 +20,11 @@
       "id": "choro",
       "title": "Choro",
       "url": "https://choro.clavesol.com.br/cardapio.json"
+    },
+    {
+      "id": "classicos",
+      "title": "Classicos",
+      "url": "https://classicos.clavesol.com.br/cardapio.json"
     }
   ]
 }
