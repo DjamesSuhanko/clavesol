@@ -11,7 +11,7 @@ Para músicos, é excepcional para treinar embocadura e sustentação de notas, 
 
 Para cordas também, no treinamento de arcada. No início é muito comum que o músico não perceba as deficiências apenas escutando, mas com um gráfico como esse, não tem desculpa para não melhorar!
 
-O l[ink do MyLythier na Play store é esse](https://play.google.com/store/apps/details?id=com.suhanko.myluthier.mobile&hl=pt_BR), aos interessados.
+O [link do MyLythier na Play store é esse](https://play.google.com/store/apps/details?id=com.suhanko.myluthier.mobile&hl=pt_BR), aos interessados.
 
 ![MyLuthier]({{BASE}}/assets/myluthierPequeno.webp)
 
