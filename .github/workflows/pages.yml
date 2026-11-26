@@ -24,6 +24,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - run: npm ci
+      - run: npm run build:css
       - run: node tests/compass.test.mjs
       - run: node tests/rhythm.test.mjs
       - run: node tests/equivalence.test.mjs

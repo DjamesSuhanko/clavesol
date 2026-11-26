@@ -30,6 +30,8 @@ Edite pelo GitHub e faça commit na branch `main`. A ação Publicar Clave Sol g
 python3 -m venv .venv
 . .venv/bin/activate
 pip install -r requirements.txt
+npm ci
+npm run build:css
 BASE_PATH='' python build.py
 python scripts/check_links.py
 python -m http.server 8000 --directory dist
@@ -99,3 +101,7 @@ A seção Apps usa `apps.json`. Cadastre cards com `criar_app.py` e prepare site
 ## Criar um subdomínio de partituras
 
 Use `criar_hinario.py` para preparar um acervo com o player dos hinários, busca, carrossel na entrada e GitHub Pages. Aceita MusicXML, MID e MSCZ e oferece somente MusicXML para download. Parâmetros e exemplos em [CRIAR-HINARIO.md](docs/CRIAR-HINARIO.md).
+
+## Visual e Tailwind CSS
+
+O tema está em `styles/modern.css`, compilado com Tailwind CSS em `assets/modern.css`. O CSS compilado é versionado para que o gerador Python continue funcionando sozinho. Após alterar o tema, execute `npm run build:css` e `BASE_PATH='' python build.py`. A ação do GitHub recompila o CSS antes de publicar. Não há Tailwind via CDN nem runtime no navegador. `assets/style.css` mantém os estilos de base das ferramentas musicais; `assets/interface.js` cuida do menu responsivo e da navegação.

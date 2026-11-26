@@ -1,0 +1,14 @@
+{
+  "name": "clavesol",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Estilos compilados do site Clave Sol",
+  "scripts": {
+    "build:css": "tailwindcss -i styles/modern.css -o assets/modern.css --minify",
+    "watch:css": "tailwindcss -i styles/modern.css -o assets/modern.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.5",
+    "tailwindcss": "^4.3.5"
+  }
+}
